@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SIC.Assembler.Utilities.Extensions;
+using System;
 using System.Collections.Generic;
 
 namespace SIC.Assembler.Utilities.BinarySearchTree
 {
-    public class Tree<T> where T : IComparable<T>
+    public class Tree<T> where T : IComparable
     {
         private BSTNode<T> _Root;
 
@@ -19,6 +20,22 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                 {
                     this.Insert(item);
                 }
+            }
+        }
+
+        public BSTNode<T> Find(T item)
+        {
+            if (this._Root == null)
+            {
+                return null;
+            }
+            if (this._Root.Value.CompareTo(item) == 0)
+            {
+                return this._Root;
+            }
+            else
+            {
+                return this.Find(item, this._Root);
             }
         }
 
@@ -54,6 +71,36 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
 
             this.Remove(item, ref this._Root);
+        }
+
+        private BSTNode<T> Find(T valueToFind, BSTNode<T> currentNode)
+        {
+            if (valueToFind == null)
+            {
+                throw new ArgumentNullException("Can't search for a null value");
+            }
+
+            if (currentNode == null)
+            {
+                return null;
+            }
+
+            if (valueToFind.IsEqual(currentNode.Value))
+            {
+                return currentNode;
+            }
+            else if (valueToFind.IsGreaterThan(currentNode.Value))
+            {
+                return this.Find(valueToFind, currentNode.Right);
+            }
+            else if (valueToFind.IsLessThan(currentNode.Value))
+            {
+                return this.Find(valueToFind, currentNode.Left);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void Insert(T item, BSTNode<T> currentNode)
@@ -129,6 +176,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
 
                 if (currentRootNode.LeftRightNodeIsSet)
                 {
+                    var tempNode = currentRootNode;
+
+                    if (true)
+                    {
+                    }
                 }
                 else if (currentRootNode.LeftNodeIsSet)
                 {

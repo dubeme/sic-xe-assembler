@@ -50,6 +50,7 @@
     <Compile Include="Utilities\BinarySearchTree\BSTNode.cs" />
     <Compile Include="Utilities\BinarySearchTree\TraverseOrder.cs" />
     <Compile Include="Utilities\BinarySearchTree\Tree.cs" />
+    <Compile Include="Utilities\Extensions\Comparison.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
