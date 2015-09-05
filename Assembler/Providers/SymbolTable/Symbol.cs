@@ -8,10 +8,19 @@ namespace SIC.Assembler.Providers.SymbolTable
     /// </summary>
     public class Symbol : IComparable
     {
+        public const string LabelErrorMessage = "The [Symbol Label] token {0} is invalid.";
+        public const string LabelPattern = "^([a-zA-Z])[\\w]{1,20}$";
+        public const string RFlagErrorMessage = "The [R Flag] token {0} is invalid.";
+        public const string RFlagFalsePattern = "^(false)$|^(f)$|^(0)$";
+        public const string RFlagPattern = "^(true|false)$|^(t|f)$|^(1|0)$";
+        public const string RFlagTruePattern = "^(true)$|^(t)$|^(1)$";
+        public const string ValueErrorMessage = "The [Value] token {0} is invalid.";
+        public const string ValuePattern = "^\\d+$";
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance has multiple.
         /// </summary>
-        public bool HasMultiple { get; set; }
+        public bool MFlag { get; set; }
 
         /// <summary>
         /// Gets or sets the key of this Symbol.
@@ -42,48 +51,40 @@ namespace SIC.Assembler.Providers.SymbolTable
         /// </exception>
         public static Symbol Parse(string str)
         {
-            string valuePattern = "^\\d+$";
-            string labelPattern = "^([a-zA-Z])[\\w]{1,20}$";
-            string rFlagPattern = "^(true|false)$|^(t|f)$|^(1|0)$";
-            string rFlagTruePattern = "^(true)$|^(t)$|^(1)$";
-            string rFlagFalsePattern = "^(false)$|^(f)$|^(0)$";
-
-            string valueErrorMessage = "The [Value] token {0} is invalid.";
-            string labelErrorMessage = "The [Symbol Label] token {0} is invalid.";
-            string rFlagErrorMessage = "The [R Flag] token {0} is invalid.";
-
             if (string.IsNullOrWhiteSpace(str))
             {
                 throw new ArgumentNullException("Input string can't be null OR empty.");
             }
 
-            var tokens = Regex.Replace(str, "\\s+", " ").Split(' ');
+            var tokens = Regex.Replace(str.Trim(), "\\s+", " ").Split(' ');
 
             if (tokens.Length != 3)
             {
                 throw new ArgumentException("The input doesn't have the correct amount of tokens [3].");
             }
-            if (!Regex.IsMatch(tokens[0], valuePattern))
+            if (!Regex.IsMatch(tokens[0], ValuePattern))
             {
-                throw new ArgumentException(string.Format(valueErrorMessage, tokens[0]));
+                throw new ArgumentException(string.Format(ValueErrorMessage, tokens[0]));
             }
-            if (!Regex.IsMatch(tokens[1], labelPattern, RegexOptions.IgnoreCase))
+            if (!Regex.IsMatch(tokens[1], LabelPattern, RegexOptions.IgnoreCase))
             {
-                // VERIFY IF THE SYMBOL HAS TO BE CASE SENSITIVE
-                throw new ArgumentException(string.Format(labelErrorMessage, tokens[1]));
+                // Todo: VERIFY IF THE SYMBOL HAS TO BE CASE SENSITIVE
+                throw new ArgumentException(string.Format(LabelErrorMessage, tokens[1]));
             }
-            if (!Regex.IsMatch(tokens[2], rFlagPattern, RegexOptions.IgnoreCase))
+            if (!Regex.IsMatch(tokens[2], RFlagPattern, RegexOptions.IgnoreCase))
             {
-                throw new ArgumentException(string.Format(rFlagErrorMessage, tokens[2]));
+                throw new ArgumentException(string.Format(RFlagErrorMessage, tokens[2]));
             }
 
             return new Symbol
             {
                 Value = int.Parse(tokens[0]),
                 Key = tokens[1].Substring(0, 6),
-                RFlag = Regex.IsMatch(tokens[2], rFlagTruePattern, RegexOptions.IgnoreCase)
+                RFlag = Regex.IsMatch(tokens[2], RFlagTruePattern, RegexOptions.IgnoreCase)
             };
         }
+
+
 
         /// <summary>
         /// Tries the parse.
@@ -100,7 +101,7 @@ namespace SIC.Assembler.Providers.SymbolTable
             }
             catch (System.Exception ex)
             {
-                // TODO: Handle exception
+                // Todo: Handle exception
             }
 
             return symbol != null;
@@ -108,7 +109,14 @@ namespace SIC.Assembler.Providers.SymbolTable
 
         public int CompareTo(object obj)
         {
-            throw new NotImplementedException();
+            var other = (Symbol)obj;
+
+            return this.Key.CompareTo(other.Key);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0, -15}{1, -15}{2, -15}{3, -15}", this.Key, this.Value, this.RFlag, this.MFlag);
         }
     }
 }

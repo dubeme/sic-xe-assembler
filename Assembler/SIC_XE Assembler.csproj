@@ -51,6 +51,7 @@
     <Compile Include="Utilities\BinarySearchTree\TraverseOrder.cs" />
     <Compile Include="Utilities\BinarySearchTree\Tree.cs" />
     <Compile Include="Utilities\Extensions\Comparison.cs" />
+    <Compile Include="Utilities\FileIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

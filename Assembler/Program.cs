@@ -44,6 +44,8 @@ namespace SIC.Assembler
             var temp = k.Right;
             temp = null;
 
+            Console.WriteLine(string.Format("{0,-10}{1,-10}{2,-10}{3,-10}{4,-10}", 0,1,2,3,4,5));
+
             change(strLst);
         }
     }
