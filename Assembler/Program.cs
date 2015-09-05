@@ -18,6 +18,8 @@ namespace SIC.Assembler
 
         private static void Main(string[] args)
         {
+            int n;
+            var num = int.TryParse("2323", out n);
             List<StringBuilder> strLst = new List<StringBuilder>
             {
                 new StringBuilder("A"),
