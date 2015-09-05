@@ -1,27 +1,48 @@
-﻿using System;
+﻿using SIC.Assembler.Utilities.BinarySearchTree;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SIC.Assembler
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void change(List<StringBuilder> strLst)
         {
-            StringBuilder a = new StringBuilder("SDSDSDSDSDeqwer");
-            Console.WriteLine(a);
-            change( a);
-            Console.WriteLine(a);
+            var temp = strLst[0];
+            
+            temp = new StringBuilder("New value - 0");
+            strLst[1] = new StringBuilder("New value - 1");
+            strLst[2] = new StringBuilder("New value - 2");
         }
 
-        static void change( StringBuilder o)
+        private static void Main(string[] args)
         {
-            o = new StringBuilder("New value");
-            Console.WriteLine("\n\n\n\n");
-            Console.WriteLine(o);
-            Console.WriteLine("\n\n\n\n");
+            List<StringBuilder> strLst = new List<StringBuilder>
+            {
+                new StringBuilder("A"),
+                new StringBuilder("B"),
+                new StringBuilder("C"),
+                new StringBuilder("D")
+            };
+
+            BSTNode<int> k = new BSTNode<int>
+            {
+                Value = 3
+            };
+            k.Left = new BSTNode<int>
+            {
+                Value = 1
+            };
+            k.Right = new BSTNode<int>
+            {
+                Value = 6
+            };
+
+            var temp = k.Right;
+            temp = null;
+
+            change(strLst);
         }
     }
 }

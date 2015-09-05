@@ -29,14 +29,8 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             {
                 return null;
             }
-            if (this._Root.Value.CompareTo(item) == 0)
-            {
-                return this._Root;
-            }
-            else
-            {
-                return this.Find(item, this._Root);
-            }
+
+            return this.Find(item, this._Root);
         }
 
         public void Insert(T item)
@@ -71,6 +65,64 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
 
             this.Remove(item, ref this._Root);
+        }
+
+        private BSTNode<T> DetachBiggestNodeWithNoChild(ref BSTNode<T> root)
+        {
+            BSTNode<T> detachedNode = null;
+
+            if (root == null)
+            {
+                throw new ArgumentNullException("Root can't be null");
+            }
+            else if (!root.LeftAndRightNodeIsSet)
+            {
+                // has only root
+                detachedNode = root;
+                root = null;
+            }
+            else if (!root.RightNodeIsSet)
+            {
+                // root has no right child
+                detachedNode = root;
+                root = root.Left;
+            }
+            else if (!root.Right.LeftOrRightNodeIsSet)
+            {
+                // root has only one right child
+                detachedNode = root.Right;
+                root.Right = null;
+            }
+            else
+            {
+                // At least one level from root
+                var currentNode = root;
+                do
+                {
+                    // In order to maintain the pointer to enable the modification of the main tree
+                    if (currentNode.RightNodeIsSet && currentNode.Right.LeftOrRightNodeIsSet)
+                    {
+                        currentNode = currentNode.Right;
+                    }
+                    else
+                    {
+                        if (currentNode.RightNodeIsSet)
+                        {
+                            detachedNode = currentNode.Right;
+                            currentNode.Right = null;
+                        }
+                        else
+                        {
+                            detachedNode = currentNode;
+                            currentNode.Right = currentNode.Left;
+                        }
+
+                        break;
+                    }
+                } while (currentNode != null);
+            }
+
+            return detachedNode;
         }
 
         private BSTNode<T> Find(T valueToFind, BSTNode<T> currentNode)
@@ -115,7 +167,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                 throw new ArgumentNullException("Can't insert null into the tree");
             }
 
-            if (currentNode.Value.CompareTo(item) > 0)
+            if (item.IsGreaterThan(currentNode.Value))
             {
                 // If current node value is bigger
                 currentNode.Height++;
@@ -131,7 +183,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                     };
                 }
             }
-            else if (currentNode.Value.CompareTo(item) < 0)
+            else if (item.IsLessThan(currentNode.Value))
             {
                 // If current node value is smaller
                 currentNode.Height++;
@@ -155,7 +207,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
 
         private void Remove(T item, ref BSTNode<T> currentRootNode)
         {
-            if (currentRootNode.Value.CompareTo(item) == 0)
+            if (item.IsEqual(currentRootNode.Value))
             {
                 /*
                           0
@@ -174,7 +226,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
 
                 */
 
-                if (currentRootNode.LeftRightNodeIsSet)
+                if (currentRootNode.LeftAndRightNodeIsSet)
                 {
                     var tempNode = currentRootNode;
 
@@ -197,7 +249,5 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                 }
             }
         }
-
-        //private void RemoveNode
     }
 }

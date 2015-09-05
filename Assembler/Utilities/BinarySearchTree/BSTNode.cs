@@ -14,11 +14,18 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
         public BSTNode<T> Right { get; set; }
         public void HandleDuplicate(T duplicate) { }
 
-        public bool LeftRightNodeIsSet
+        public bool LeftAndRightNodeIsSet
         {
             get
             {
                 return this.LeftNodeIsSet && this.RightNodeIsSet;
+            }
+        }
+        public bool LeftOrRightNodeIsSet
+        {
+            get
+            {
+                return this.LeftNodeIsSet || this.RightNodeIsSet;
             }
         }
         public bool LeftNodeIsSet
