@@ -33,7 +33,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             return this.Find(item, this._Root);
         }
 
-        public void Insert(T item)
+        public void Insert(T item, Action<T> duplicateHandler = null)
         {
             if (item == null)
             {
@@ -49,7 +49,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
             else
             {
-                this.Insert(item, this._Root);
+                this.Insert(item, this._Root, duplicateHandler);
             }
         }
 
@@ -155,7 +155,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
-        private void Insert(T item, BSTNode<T> currentNode)
+        private void Insert(T item, BSTNode<T> currentNode, Action<T> duplicateHandler = null)
         {
             if (currentNode == null)
             {
@@ -201,7 +201,10 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
             else
             {
-                currentNode.HandleDuplicate(item);
+                if (duplicateHandler != null)
+                {
+                    duplicateHandler(currentNode.Value);
+                }
             }
         }
 

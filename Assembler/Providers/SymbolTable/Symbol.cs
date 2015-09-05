@@ -6,7 +6,7 @@ namespace SIC.Assembler.Providers.SymbolTable
     /// <summary>
     ///
     /// </summary>
-    public class Symbol
+    public class Symbol : IComparable
     {
         /// <summary>
         /// Gets or sets a value indicating whether this instance has multiple.
@@ -104,6 +104,11 @@ namespace SIC.Assembler.Providers.SymbolTable
             }
 
             return symbol != null;
+        }
+
+        public int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -12,7 +12,6 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
         public T Value { get; set; }
         public BSTNode<T> Left { get; set; }
         public BSTNode<T> Right { get; set; }
-        public void HandleDuplicate(T duplicate) { }
 
         public bool LeftAndRightNodeIsSet
         {
