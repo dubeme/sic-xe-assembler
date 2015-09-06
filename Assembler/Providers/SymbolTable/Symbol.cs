@@ -8,24 +8,24 @@ namespace SIC.Assembler.Providers.SymbolTable
     /// </summary>
     public class Symbol : IComparable
     {
-        public const string LabelErrorMessage = "The [Symbol Label] token {0} is invalid.";
+        public const string LabelErrorMessage = "The [Symbol Label] token \"{0}\" is invalid.";
         public const string LabelPattern = "^([a-zA-Z])[\\w]{1,20}$";
-        public const string RFlagErrorMessage = "The [R Flag] token {0} is invalid.";
+        public const string RFlagErrorMessage = "The [R Flag] token \"{0}\" is invalid.";
         public const string RFlagFalsePattern = "^(false)$|^(f)$|^(0)$";
         public const string RFlagPattern = "^(true|false)$|^(t|f)$|^(1|0)$";
         public const string RFlagTruePattern = "^(true)$|^(t)$|^(1)$";
-        public const string ValueErrorMessage = "The [Value] token {0} is invalid.";
+        public const string ValueErrorMessage = "The [Value] token \"{0}\" is invalid.";
         public const string ValuePattern = "^\\d+$";
+
+        /// <summary>
+        /// Gets or sets the label of this Symbol.
+        /// </summary>
+        public string Label { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance has multiple.
         /// </summary>
         public bool MFlag { get; set; }
-
-        /// <summary>
-        /// Gets or sets the key of this Symbol.
-        /// </summary>
-        public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is relocatable.
@@ -62,29 +62,45 @@ namespace SIC.Assembler.Providers.SymbolTable
             {
                 throw new ArgumentException("The input doesn't have the correct amount of tokens [3].");
             }
-            if (!Regex.IsMatch(tokens[0], ValuePattern))
-            {
-                throw new ArgumentException(string.Format(ValueErrorMessage, tokens[0]));
-            }
-            if (!Regex.IsMatch(tokens[1], LabelPattern, RegexOptions.IgnoreCase))
-            {
-                // Todo: VERIFY IF THE SYMBOL HAS TO BE CASE SENSITIVE
-                throw new ArgumentException(string.Format(LabelErrorMessage, tokens[1]));
-            }
-            if (!Regex.IsMatch(tokens[2], RFlagPattern, RegexOptions.IgnoreCase))
-            {
-                throw new ArgumentException(string.Format(RFlagErrorMessage, tokens[2]));
-            }
 
             return new Symbol
             {
-                Value = int.Parse(tokens[0]),
-                Key = tokens[1].Substring(0, 6),
-                RFlag = Regex.IsMatch(tokens[2], RFlagTruePattern, RegexOptions.IgnoreCase)
+                Value = ParseSymbolValue(tokens[0]),
+                Label = ParseSymbolLabel(tokens[1]),
+                RFlag = ParseSymbolRFlag(tokens[2])
             };
         }
 
+        public static string ParseSymbolLabel(string label)
+        {
+            if (!Regex.IsMatch(label, LabelPattern, RegexOptions.IgnoreCase))
+            {
+                // Todo: VERIFY IF THE SYMBOL LABEL HAS TO BE CASE SENSITIVE
+                throw new ArgumentException(string.Format(LabelErrorMessage, label));
+            }
 
+            return label.Substring(0, 6);
+        }
+
+        public static bool ParseSymbolRFlag(string rFlag)
+        {
+            if (!Regex.IsMatch(rFlag, RFlagPattern, RegexOptions.IgnoreCase))
+            {
+                throw new ArgumentException(string.Format(RFlagErrorMessage, rFlag));
+            }
+
+            return Regex.IsMatch(rFlag, RFlagTruePattern, RegexOptions.IgnoreCase);
+        }
+
+        public static int ParseSymbolValue(string value)
+        {
+            if (!Regex.IsMatch(value, ValuePattern))
+            {
+                throw new ArgumentException(string.Format(ValueErrorMessage, value));
+            }
+
+            return int.Parse(value);
+        }
 
         /// <summary>
         /// Tries the parse.
@@ -109,14 +125,20 @@ namespace SIC.Assembler.Providers.SymbolTable
 
         public int CompareTo(object obj)
         {
-            var other = (Symbol)obj;
+            if (obj is string)
+            {
+                // This is the scenario where we
+                // compare a Symbol object to a string(Symbol label)
+                return this.Label.CompareTo(obj);
+            }
 
-            return this.Key.CompareTo(other.Key);
+            var other = (Symbol)obj;
+            return this.Label.CompareTo(other.Label);
         }
 
         public override string ToString()
         {
-            return string.Format("{0, -15}{1, -15}{2, -15}{3, -15}", this.Key, this.Value, this.RFlag, this.MFlag);
+            return string.Format("{0, -15}{1, -15}{2, -15}{3, -15}", this.Label, this.Value, this.RFlag, this.MFlag);
         }
     }
 }

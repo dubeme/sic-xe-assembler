@@ -23,14 +23,26 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
-        public BSTNode<T> Find(T item)
+        public BSTNode<T> FindNode(object value)
         {
             if (this._Root == null)
             {
                 return null;
             }
 
-            return this.Find(item, this._Root);
+            return this.Find(value, this._Root);
+        }
+
+        public T FindValue(object key)
+        {
+            var node = FindNode(key);
+
+            if (node == null)
+            {
+                return default(T);
+            }
+
+            return node.Value;
         }
 
         public void Insert(T item, Action<T> duplicateHandler = null)
@@ -53,8 +65,26 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
-        public void Print()
+        public void Print(TraverseOrder traverseOrder = TraverseOrder.InOrder, Action<BSTNode<T>> printFunction)
         {
+            switch (traverseOrder)
+            {
+                case TraverseOrder.InOrder:
+                    this.PrintInOrder(this._Root, printFunction);
+                    break;
+
+                case TraverseOrder.PostOrder:
+                    this.PrintPostOrder(this._Root, printFunction);
+                    break;
+
+                case TraverseOrder.PreOrder:
+                    this.PrintPreOrder(this._Root, printFunction);
+                    break;
+
+                case TraverseOrder.LevelOrder:
+                    this.PrintLevelOrder(this._Root, printFunction);
+                    break;
+            }
         }
 
         public void Remove(T item)
@@ -125,7 +155,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             return detachedNode;
         }
 
-        private BSTNode<T> Find(T valueToFind, BSTNode<T> currentNode)
+        private BSTNode<T> Find(object valueToFind, BSTNode<T> currentNode)
         {
             if (valueToFind == null)
             {
@@ -137,17 +167,17 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                 return null;
             }
 
-            if (valueToFind.IsEqual(currentNode.Value))
+            if (currentNode.Value.IsEqual(valueToFind))
             {
                 return currentNode;
             }
-            else if (valueToFind.IsGreaterThan(currentNode.Value))
-            {
-                return this.Find(valueToFind, currentNode.Right);
-            }
-            else if (valueToFind.IsLessThan(currentNode.Value))
+            else if (currentNode.Value.IsGreaterThan(valueToFind))
             {
                 return this.Find(valueToFind, currentNode.Left);
+            }
+            else if (currentNode.Value.IsLessThan(valueToFind))
+            {
+                return this.Find(valueToFind, currentNode.Right);
             }
             else
             {
@@ -205,6 +235,60 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                 {
                     duplicateHandler(currentNode.Value);
                 }
+            }
+        }
+
+        private void PrintInOrder(BSTNode<T> currentNode, Action<BSTNode<T>> printFunction)
+        {
+            if (currentNode != null)
+            {
+                PrintInOrder(currentNode.Left, printFunction);
+                printFunction(currentNode);
+                PrintInOrder(currentNode.Right, printFunction);
+            }
+        }
+
+        private void PrintLevelOrder(BSTNode<T> currentNode, Action<BSTNode<T>> printFunction)
+        {
+            if (currentNode != null)
+            {
+                var nodes = new Queue<BSTNode<T>>();
+                nodes.Enqueue(currentNode);
+
+                while (nodes.Count > 0)
+                {
+                    var node = nodes.Dequeue();
+                    printFunction(node);
+
+                    if (node.LeftNodeIsSet)
+                    {
+                        nodes.Enqueue(node.Left);
+                    }
+                    if (node.RightNodeIsSet)
+                    {
+                        nodes.Enqueue(node.Right);
+                    }
+                }
+            }
+        }
+
+        private void PrintPostOrder(BSTNode<T> currentNode, Action<BSTNode<T>> printFunction)
+        {
+            if (currentNode != null)
+            {
+                PrintPostOrder(currentNode.Left, printFunction);
+                PrintPostOrder(currentNode.Right, printFunction);
+                printFunction(currentNode);
+            }
+        }
+
+        private void PrintPreOrder(BSTNode<T> currentNode, Action<BSTNode<T>> printFunction)
+        {
+            if (currentNode != null)
+            {
+                printFunction(currentNode);
+                PrintPreOrder(currentNode.Left, printFunction);
+                PrintPreOrder(currentNode.Right, printFunction);
             }
         }
 
