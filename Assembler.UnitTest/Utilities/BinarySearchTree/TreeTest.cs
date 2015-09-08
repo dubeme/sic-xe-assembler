@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SIC.Assembler.Utilities.BinarySearchTree;
 
 namespace Assembler.UnitTest.Utilities.BinarySearchTree
 {
@@ -8,18 +9,24 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
         [TestMethod]
         public void CreateTree()
         {
+            string printOut = "";
             var root = TreeUtilities.MockTree<int>();
-
             root.Insert(5);
             root.Insert(3);
             root.Insert(4);
             root.Insert(2);
+            root.Insert(1);
             root.Insert(8);
             root.Insert(6);
             root.Insert(9);
+            root.Insert(7);
 
-            root.Print();
+            root.Print(TraverseOrder.InOrder, printFunction: (item) =>
+            {
+                printOut += item;
+            });
 
+            Assert.AreEqual("123456789", printOut);
         }
 
         [TestMethod]

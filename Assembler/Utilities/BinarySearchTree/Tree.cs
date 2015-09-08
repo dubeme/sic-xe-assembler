@@ -65,9 +65,13 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
-        public void Print(TraverseOrder traverseOrder = TraverseOrder.InOrder, Action<BSTNode<T>> printFunction = null)
+        public void Print(TraverseOrder traverseOrder = TraverseOrder.InOrder, Action<object> printFunction = null)
         {
-            printFunction = printFunction ?? Console.WriteLine;
+            printFunction = printFunction ?? new Action<object>((value) =>
+            {
+                Console.WriteLine(value);
+            });
+
             switch (traverseOrder)
             {
                 case TraverseOrder.InOrder:
@@ -239,55 +243,69 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
-        private void PrintInOrder(BSTNode<T> currentNode, Action<BSTNode<T>> printFunction)
+        private void PrintInOrder(BSTNode<T> currentNode, Action<object> printFunction)
         {
             if (currentNode != null)
             {
                 PrintInOrder(currentNode.Left, printFunction);
-                printFunction(currentNode);
+                printFunction(currentNode.Value);
                 PrintInOrder(currentNode.Right, printFunction);
             }
         }
 
-        private void PrintLevelOrder(BSTNode<T> currentNode, Action<BSTNode<T>> printFunction)
+        private void PrintLevelOrder(BSTNode<T> currentNode, Action<object> printFunction)
         {
             if (currentNode != null)
             {
-                var nodes = new Queue<BSTNode<T>>();
-                nodes.Enqueue(currentNode);
+                // Todo: Find a more efficient algorithm
+                var nodes = new List<BSTNode<T>> { currentNode };
+                var tempNodes = new List<BSTNode<T>> { };
+                var printOut = new List<T>();
 
-                while (nodes.Count > 0)
+                do
                 {
-                    var node = nodes.Dequeue();
-                    printFunction(node);
+                    foreach (var node in nodes)
+                    {
+                        printOut.Add(node.Value);
+                    }
 
-                    if (node.LeftNodeIsSet)
+                    printFunction(printOut.ToArray());
+
+                    printOut.Clear();
+                    tempNodes.Clear();
+
+                    foreach (var node in nodes)
                     {
-                        nodes.Enqueue(node.Left);
+                        if (node.LeftNodeIsSet)
+                        {
+                            tempNodes.Add(node.Left);
+                        }
+                        if (node.RightNodeIsSet)
+                        {
+                            tempNodes.Add(node.Right);
+                        }
                     }
-                    if (node.RightNodeIsSet)
-                    {
-                        nodes.Enqueue(node.Right);
-                    }
-                }
+
+                    nodes = new List<BSTNode<T>>(tempNodes);
+                } while (nodes.Count > 0);
             }
         }
 
-        private void PrintPostOrder(BSTNode<T> currentNode, Action<BSTNode<T>> printFunction)
+        private void PrintPostOrder(BSTNode<T> currentNode, Action<object> printFunction)
         {
             if (currentNode != null)
             {
                 PrintPostOrder(currentNode.Left, printFunction);
                 PrintPostOrder(currentNode.Right, printFunction);
-                printFunction(currentNode);
+                printFunction(currentNode.Value);
             }
         }
 
-        private void PrintPreOrder(BSTNode<T> currentNode, Action<BSTNode<T>> printFunction)
+        private void PrintPreOrder(BSTNode<T> currentNode, Action<object> printFunction)
         {
             if (currentNode != null)
             {
-                printFunction(currentNode);
+                printFunction(currentNode.Value);
                 PrintPreOrder(currentNode.Left, printFunction);
                 PrintPreOrder(currentNode.Right, printFunction);
             }
