@@ -65,8 +65,9 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
-        public void Print(TraverseOrder traverseOrder = TraverseOrder.InOrder, Action<BSTNode<T>> printFunction)
+        public void Print(TraverseOrder traverseOrder = TraverseOrder.InOrder, Action<BSTNode<T>> printFunction = null)
         {
+            printFunction = printFunction ?? Console.WriteLine;
             switch (traverseOrder)
             {
                 case TraverseOrder.InOrder:
