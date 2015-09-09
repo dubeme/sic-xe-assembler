@@ -5,6 +5,17 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
 {
     public class TreeUtilities
     {
+        public static Tree<T> CreateTree<T>(params T[] values) where T : IComparable
+        {
+            var root = TreeUtilities.MockTree<T>();
+
+            foreach (var item in values)
+            {
+                root.Insert(item);
+            }
+            return root;
+        }
+
         public static BSTNode<T> MockBSTNode<T>(T value, BSTNode<T> left = null, BSTNode<T> right = null)
         {
             return new BSTNode<T>

@@ -33,9 +33,9 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             return this.Find(value, this._Root);
         }
 
-        public T FindValue(object key)
+        public T FindValue(object value)
         {
-            var node = FindNode(key);
+            var node = FindNode(value);
 
             if (node == null)
             {
