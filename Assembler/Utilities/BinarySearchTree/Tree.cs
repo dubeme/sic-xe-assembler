@@ -49,7 +49,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
         {
             if (item == null)
             {
-                throw new ArgumentNullException("Can't insert null into the tree");
+                throw new ArgumentNullException(nameof(item));
             }
 
             if (this._Root == null)
@@ -164,7 +164,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
         {
             if (valueToFind == null)
             {
-                throw new ArgumentNullException("Can't search for a null value");
+                throw new ArgumentNullException(nameof(valueToFind), "Can't search for a null value");
             }
 
             if (currentNode == null)
@@ -199,7 +199,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
 
             if (item == null)
             {
-                throw new ArgumentNullException("Can't insert null into the tree");
+                throw new ArgumentNullException( nameof(item),"Can't insert null into the tree");
             }
 
             if (item.IsGreaterThan(currentNode.Value))

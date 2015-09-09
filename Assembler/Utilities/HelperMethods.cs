@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SIC.Assembler.Utilities
 {
-    public class FileIO
+    public static class HelperMethods
     {
         public static string[] GetAllNonEmptyLines(string filePath)
         {
@@ -38,6 +38,11 @@ namespace SIC.Assembler.Utilities
             }
 
             return lines.ToArray();
+        }
+
+        public static void ThrowNullOrWhiteSpaceStringException(string argName)
+        {
+            throw new ArgumentNullException(argName, string.Format("{0} can't be null, empty OR only whitespace(s)", argName));
         }
     }
 }

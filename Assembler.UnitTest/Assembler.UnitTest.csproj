@@ -53,6 +53,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\SymbolTable\SymbolTest.cs" />
+    <Compile Include="Providers\SymbolTable\SymbolTableProviderTest.cs" />
     <Compile Include="Utilities\BinarySearchTree\TreeTest.cs" />
     <Compile Include="Utilities\BinarySearchTree\BSTNodeTest.cs" />
     <Compile Include="Utilities\BinarySearchTree\TreeUtilities.cs" />
@@ -62,6 +64,9 @@
       <Project>{94fe74df-d4ac-48d4-9972-f5583eeb75eb}</Project>
       <Name>SIC_XE Assembler</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Integration\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

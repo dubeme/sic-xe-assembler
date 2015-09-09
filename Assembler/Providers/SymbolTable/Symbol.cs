@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SIC.Assembler.Utilities;
+using System;
 using System.Text.RegularExpressions;
 
 namespace SIC.Assembler.Providers.SymbolTable
@@ -15,7 +16,7 @@ namespace SIC.Assembler.Providers.SymbolTable
         public const string RFlagPattern = "^(true|false)$|^(t|f)$|^(1|0)$";
         public const string RFlagTruePattern = "^(true)$|^(t)$|^(1)$";
         public const string ValueErrorMessage = "The [Value] token \"{0}\" is invalid.";
-        public const string ValuePattern = "^\\d+$";
+        public const string ValuePattern = "^(\\+|-)?\\d+$";
 
         /// <summary>
         /// Gets or sets the label of this Symbol.
@@ -40,7 +41,7 @@ namespace SIC.Assembler.Providers.SymbolTable
         /// <summary>
         /// Parses the specified string.
         /// </summary>
-        /// <param name="str">The string.</param>
+        /// <param name="codeLine">The string.</param>
         /// <returns>A symbol object</returns>
         /// <exception cref="ArgumentNullException">Input string can't be null OR empty.</exception>
         /// <exception cref="ArgumentException">
@@ -49,14 +50,14 @@ namespace SIC.Assembler.Providers.SymbolTable
         /// or The wrong value is provided for the Symbol label
         /// or The wrong value is provided for the R Flag
         /// </exception>
-        public static Symbol Parse(string str)
+        public static Symbol Parse(string codeLine)
         {
-            if (string.IsNullOrWhiteSpace(str))
+            if (string.IsNullOrWhiteSpace(codeLine))
             {
-                throw new ArgumentNullException("Input string can't be null OR empty.");
+                HelperMethods.ThrowNullOrWhiteSpaceStringException(nameof(codeLine));
             }
 
-            var tokens = Regex.Replace(str.Trim(), "\\s+", " ").Split(' ');
+            var tokens = Regex.Replace(codeLine.Trim(), "\\s+", " ").Split(' ');
 
             if (tokens.Length != 3)
             {
@@ -73,17 +74,31 @@ namespace SIC.Assembler.Providers.SymbolTable
 
         public static string ParseSymbolLabel(string label)
         {
+            if (string.IsNullOrWhiteSpace(label))
+            {
+                HelperMethods.ThrowNullOrWhiteSpaceStringException(nameof(label));
+            }
+
+            label = label.Trim();
+
             if (!Regex.IsMatch(label, LabelPattern, RegexOptions.IgnoreCase))
             {
                 // Todo: VERIFY IF THE SYMBOL LABEL HAS TO BE CASE SENSITIVE
                 throw new ArgumentException(string.Format(LabelErrorMessage, label));
             }
 
-            return label.Substring(0, 6);
+            return label.Length > 6 ? label.Substring(0, 6) : label;
         }
 
         public static bool ParseSymbolRFlag(string rFlag)
         {
+            if (string.IsNullOrWhiteSpace(rFlag))
+            {
+                HelperMethods.ThrowNullOrWhiteSpaceStringException(nameof(rFlag));
+            }
+
+            rFlag = rFlag.Trim();
+
             if (!Regex.IsMatch(rFlag, RFlagPattern, RegexOptions.IgnoreCase))
             {
                 throw new ArgumentException(string.Format(RFlagErrorMessage, rFlag));
@@ -94,6 +109,13 @@ namespace SIC.Assembler.Providers.SymbolTable
 
         public static int ParseSymbolValue(string value)
         {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                HelperMethods.ThrowNullOrWhiteSpaceStringException(nameof(value));
+            }
+
+            value = value.Trim();
+
             if (!Regex.IsMatch(value, ValuePattern))
             {
                 throw new ArgumentException(string.Format(ValueErrorMessage, value));
@@ -115,7 +137,7 @@ namespace SIC.Assembler.Providers.SymbolTable
             {
                 symbol = Parse(str);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 // Todo: Handle exception
             }

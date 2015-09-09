@@ -9,7 +9,7 @@ namespace SIC.Assembler.Providers.SymbolTable
         public static Tree<Symbol> BuildSymbolTable(string filePath)
         {
             var symbolTree = new Tree<Symbol>();
-            var codeLines = FileIO.GetAllNonEmptyLines(filePath);
+            var codeLines = HelperMethods.GetAllNonEmptyLines(filePath);
 
             foreach (var codeLine in codeLines)
             {
@@ -32,7 +32,7 @@ namespace SIC.Assembler.Providers.SymbolTable
 
         public static void TestSymbolTree(Tree<Symbol> symbolTree, string filePath)
         {
-            var symbolLabels = FileIO.GetAllNonEmptyLines(filePath);
+            var symbolLabels = HelperMethods.GetAllNonEmptyLines(filePath);
             foreach (var symbolLabel in symbolLabels)
             {
                 try
