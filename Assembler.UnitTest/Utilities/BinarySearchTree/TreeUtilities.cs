@@ -26,16 +26,6 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
             };
         }
 
-        public static BSTNode<object> MockTestNode(object value = null)
-        {
-            return new BSTNode<object>
-            {
-                Value = value,
-                Left = null,
-                Right = null
-            };
-        }
-
         public static Tree<T> MockTree<T>() where T : IComparable
         {
             return new Tree<T> { };
