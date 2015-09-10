@@ -10,7 +10,7 @@ namespace SIC.Assembler.Providers.SymbolTable
     public class Symbol : IComparable
     {
         public const string LabelErrorMessage = "The [Symbol Label] token \"{0}\" is invalid.";
-        public const string LabelPattern = "^([a-zA-Z])[\\w]{1,20}$";
+        public const string LabelPattern = "^([a-z])[\\w]{1,20}$";
         public const string RFlagErrorMessage = "The [R Flag] token \"{0}\" is invalid.";
         public const string RFlagFalsePattern = "^(false)$|^(f)$|^(0)$";
         public const string RFlagPattern = "^(true|false)$|^(t|f)$|^(1|0)$";
@@ -79,11 +79,10 @@ namespace SIC.Assembler.Providers.SymbolTable
                 HelperMethods.ThrowNullOrWhiteSpaceStringException(nameof(label));
             }
 
-            label = label.Trim();
+            label = label.Trim().ToLower();
 
-            if (!Regex.IsMatch(label, LabelPattern, RegexOptions.IgnoreCase))
+            if (!Regex.IsMatch(label, LabelPattern))
             {
-                // Todo: VERIFY IF THE SYMBOL LABEL HAS TO BE CASE SENSITIVE
                 throw new ArgumentException(string.Format(LabelErrorMessage, label));
             }
 
@@ -97,14 +96,14 @@ namespace SIC.Assembler.Providers.SymbolTable
                 HelperMethods.ThrowNullOrWhiteSpaceStringException(nameof(rFlag));
             }
 
-            rFlag = rFlag.Trim();
+            rFlag = rFlag.Trim().ToLower();
 
-            if (!Regex.IsMatch(rFlag, RFlagPattern, RegexOptions.IgnoreCase))
+            if (!Regex.IsMatch(rFlag, RFlagPattern))
             {
                 throw new ArgumentException(string.Format(RFlagErrorMessage, rFlag));
             }
 
-            return Regex.IsMatch(rFlag, RFlagTruePattern, RegexOptions.IgnoreCase);
+            return Regex.IsMatch(rFlag, RFlagTruePattern);
         }
 
         public static int ParseSymbolValue(string value)
