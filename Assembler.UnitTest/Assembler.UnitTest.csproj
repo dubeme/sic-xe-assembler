@@ -68,6 +68,10 @@
   <ItemGroup>
     <Folder Include="Integration\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Providers\SymbolTable\test.txt" />
+    <Content Include="Providers\SymbolTable\symbol.txt" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -7,6 +7,13 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
     public class TreeTest
     {
         [TestMethod]
+        public void CheckTreeHeight()
+        {
+            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            Assert.AreEqual(3, root.FindNode(5).Height);
+        }
+
+        [TestMethod]
         public void CreateTree()
         {
             Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);

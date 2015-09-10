@@ -213,7 +213,7 @@ namespace Assembler.UnitTest.Providers.SymbolTable
             Assert.IsFalse(Symbol.TryParse("", out symbol));
             Assert.IsTrue(Symbol.TryParse("4545 AEIOU false", out symbol));
 
-            Assert.AreEqual(symbol.Label, "AEIOU");
+            Assert.AreEqual(symbol.Label, "aeiou");
             Assert.AreEqual(symbol.Value, 4545);
             Assert.AreEqual(symbol.RFlag, false);
             Assert.AreEqual(symbol.MFlag, false);
