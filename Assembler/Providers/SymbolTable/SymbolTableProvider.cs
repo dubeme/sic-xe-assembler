@@ -6,10 +6,11 @@ namespace SIC.Assembler.Providers.SymbolTable
 {
     public class SymbolTableProvider
     {
-        public static Tree<Symbol> BuildSymbolTable(string filePath)
+        public static Tree<Symbol> BuildSymbolTree(string filePath, Action<object> printFunction = null)
         {
             var symbolTree = new Tree<Symbol>();
             var codeLines = HelperMethods.GetAllNonEmptyLines(filePath);
+            printFunction = printFunction ?? Console.WriteLine;
 
             foreach (var codeLine in codeLines)
             {
@@ -23,34 +24,36 @@ namespace SIC.Assembler.Providers.SymbolTable
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    printFunction(ex.Message);
                 }
             }
 
             return symbolTree;
         }
 
-        public static void TestSymbolTree(Tree<Symbol> symbolTree, string filePath)
+        public static void PerformLookupOnSymbolTree(Tree<Symbol> symbolTree, string filePath, Action<object> printFunction = null)
         {
             var symbolLabels = HelperMethods.GetAllNonEmptyLines(filePath);
+            printFunction = printFunction ?? Console.WriteLine;
+
             foreach (var symbolLabel in symbolLabels)
             {
                 try
                 {
-                    var symbol = symbolTree.FindValue(symbolLabel);
+                    var symbol = symbolTree.FindValue(Symbol.ParseSymbolLabel(symbolLabel));
 
                     if (symbol != null)
                     {
-                        Console.WriteLine(symbol);
+                        printFunction(symbol);
                     }
                     else
                     {
-                        Console.WriteLine(string.Format("The symbol \"{0}\" was not found.", symbolLabel));
+                        printFunction(string.Format("The symbol \"{0}\" was not found.", symbolLabel));
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    printFunction(ex.Message);
                 }
             }
         }
