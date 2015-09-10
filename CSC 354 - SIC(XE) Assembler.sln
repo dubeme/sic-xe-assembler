@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIC_XE Assembler", "Assembler\SIC_XE Assembler.csproj", "{94FE74DF-D4AC-48D4-9972-F5583EEB75EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembler.UnitTest", "Assembler.UnitTest\Assembler.UnitTest.csproj", "{744396FD-DCA9-4229-BE28-BB1AD1C7167F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{94FE74DF-D4AC-48D4-9972-F5583EEB75EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94FE74DF-D4AC-48D4-9972-F5583EEB75EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94FE74DF-D4AC-48D4-9972-F5583EEB75EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94FE74DF-D4AC-48D4-9972-F5583EEB75EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{744396FD-DCA9-4229-BE28-BB1AD1C7167F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{744396FD-DCA9-4229-BE28-BB1AD1C7167F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{744396FD-DCA9-4229-BE28-BB1AD1C7167F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{744396FD-DCA9-4229-BE28-BB1AD1C7167F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
