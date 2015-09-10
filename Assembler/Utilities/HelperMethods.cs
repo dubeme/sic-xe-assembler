@@ -6,10 +6,6 @@ namespace SIC.Assembler.Utilities
 {
     public static class HelperMethods
     {
-        public static string[] GetAllNonEmptyLines(string filePath)
-        {
-            return GetAllLines(filePath, true);
-        }
         public static string[] GetAllLines(string filePath, bool ignoreBlankLines)
         {
             var lines = new List<string>();
@@ -38,6 +34,11 @@ namespace SIC.Assembler.Utilities
             }
 
             return lines.ToArray();
+        }
+
+        public static string[] GetAllNonEmptyLines(string filePath)
+        {
+            return GetAllLines(filePath, true);
         }
 
         public static void ThrowNullOrWhiteSpaceStringException(string argName)
