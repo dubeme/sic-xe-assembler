@@ -190,7 +190,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
-        private void Insert(T item, BSTNode<T> currentNode, Action<T> duplicateHandler = null)
+        private void Insert(T item, BSTNode<T> currentNode, Action<T> duplicateHandler)
         {
             if (currentNode == null)
             {
@@ -199,16 +199,16 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
 
             if (item == null)
             {
-                throw new ArgumentNullException( nameof(item),"Can't insert null into the tree");
+                throw new ArgumentNullException(nameof(item), "Can't insert null into the tree");
             }
 
             if (item.IsGreaterThan(currentNode.Value))
             {
                 // If current node value is bigger
-                currentNode.Height++;
+                // currentNode.Height++;
                 if (currentNode.Right != null)
                 {
-                    this.Insert(item, currentNode.Right);
+                    this.Insert(item, currentNode.Right, duplicateHandler);
                 }
                 else
                 {
@@ -221,10 +221,10 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             else if (item.IsLessThan(currentNode.Value))
             {
                 // If current node value is smaller
-                currentNode.Height++;
+                // currentNode.Height++;
                 if (currentNode.Left != null)
                 {
-                    this.Insert(item, currentNode.Left);
+                    this.Insert(item, currentNode.Left, duplicateHandler);
                 }
                 else
                 {
