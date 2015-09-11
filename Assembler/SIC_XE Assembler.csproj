@@ -46,7 +46,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\SymbolTable\Symbol.cs" />
-    <Compile Include="Providers\SymbolTable\SymbolTableProvider.cs" />
+    <Compile Include="Providers\SymbolTable\SymbolTreeProvider.cs" />
     <Compile Include="Utilities\BinarySearchTree\BSTNode.cs" />
     <Compile Include="Utilities\BinarySearchTree\TraverseOrder.cs" />
     <Compile Include="Utilities\BinarySearchTree\Tree.cs" />

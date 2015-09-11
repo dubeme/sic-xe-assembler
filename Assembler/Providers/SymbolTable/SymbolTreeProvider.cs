@@ -4,13 +4,15 @@ using System;
 
 namespace SIC.Assembler.Providers.SymbolTable
 {
-    public class SymbolTableProvider
+    public class SymbolTreeProvider
     {
-        public static Tree<Symbol> BuildSymbolTree(string filePath, Action<object> printFunction = null)
+        public static Tree<Symbol> BuildSymbolTree(string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
         {
             var symbolTree = new Tree<Symbol>();
             var codeLines = HelperMethods.GetAllNonEmptyLines(filePath);
+
             printFunction = printFunction ?? Console.WriteLine;
+            errorPrintFunction = errorPrintFunction ?? printFunction;
 
             foreach (var codeLine in codeLines)
             {
@@ -21,20 +23,22 @@ namespace SIC.Assembler.Providers.SymbolTable
                     {
                         sym.MFlag = true;
                     });
+                    printFunction(string.Format("Inserted symbol - {0}", symbol.Label));
                 }
                 catch (Exception ex)
                 {
-                    printFunction(ex.Message);
+                    errorPrintFunction(ex.Message);
                 }
             }
 
             return symbolTree;
         }
 
-        public static void PerformLookupOnSymbolTree(Tree<Symbol> symbolTree, string filePath, Action<object> printFunction = null)
+        public static void PerformLookupOnSymbolTree(Tree<Symbol> symbolTree, string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
         {
             var symbolLabels = HelperMethods.GetAllNonEmptyLines(filePath);
             printFunction = printFunction ?? Console.WriteLine;
+            errorPrintFunction = errorPrintFunction ?? printFunction;
 
             foreach (var symbolLabel in symbolLabels)
             {
@@ -48,12 +52,12 @@ namespace SIC.Assembler.Providers.SymbolTable
                     }
                     else
                     {
-                        printFunction(string.Format("The symbol \"{0}\" was not found.", symbolLabel));
+                        errorPrintFunction(string.Format("The symbol \"{0}\" was not found.", symbolLabel));
                     }
                 }
                 catch (Exception ex)
                 {
-                    printFunction(ex.Message);
+                    errorPrintFunction(ex.Message);
                 }
             }
         }

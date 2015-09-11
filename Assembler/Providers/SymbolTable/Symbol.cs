@@ -9,14 +9,16 @@ namespace SIC.Assembler.Providers.SymbolTable
     /// </summary>
     public class Symbol : IComparable
     {
-        public const string LabelErrorMessage = "The [Symbol Label] token \"{0}\" is invalid.";
-        public const string LabelPattern = "^([a-z])[\\w]{1,20}$";
-        public const string RFlagErrorMessage = "The [R Flag] token \"{0}\" is invalid.";
-        public const string RFlagFalsePattern = "^(false)$|^(f)$|^(0)$";
-        public const string RFlagPattern = "^(true|false)$|^(t|f)$|^(1|0)$";
-        public const string RFlagTruePattern = "^(true)$|^(t)$|^(1)$";
-        public const string ValueErrorMessage = "The [Value] token \"{0}\" is invalid.";
-        public const string ValuePattern = "^(\\+|-)?\\d+$";
+        public const string LABEL_ERROR_MESSAGE_INVALID_CHAR = "\"{0}\" is invalid, label can only contain [Aphabets, Numbers and Underscore].";
+        public const string LABEL_ERROR_MESSAGE_INVALID_LENGTH = "\"{0}\" is invalid, label must be within [1, 21] characters in length.";
+        public const string LABEL_ERROR_MESSAGE_START_CHAR = "\"{0}\" is invalid, label must start with a letter.";
+        public const string LABEL_PATTERN = "^([a-z])[\\w]{1,20}$";
+        public const string RFLAG_ERROR_MESSAGE = "\"{0}\" is invalid, R Flag can only be [true\\false, t\\f, 1\\0].";
+        public const string RFLAG_FALSE_PATTERN = "^(false)$|^(f)$|^(0)$";
+        public const string RFLAG_PATTERN = "^(true|false)$|^(t|f)$|^(1|0)$";
+        public const string RFLAG_TRUE_PATTERN = "^(true)$|^(t)$|^(1)$";
+        public const string VALUE_ERROR_MESSAGE = "\"{0}\" is invalid, value can only be numbers.";
+        public const string VALUE_PATTERN = "^(\\+|-)?\\d+$";
 
         /// <summary>
         /// Gets or sets the label of this Symbol.
@@ -61,7 +63,7 @@ namespace SIC.Assembler.Providers.SymbolTable
 
             if (tokens.Length != 3)
             {
-                throw new ArgumentException("The input doesn't have the correct amount of tokens [3].");
+                throw new ArgumentException("The input \"" + codeLine + "\" doesn't have the correct amount of tokens [3].");
             }
 
             return new Symbol
@@ -81,9 +83,18 @@ namespace SIC.Assembler.Providers.SymbolTable
 
             label = label.Trim().ToLower();
 
-            if (!Regex.IsMatch(label, LabelPattern))
+            if (!(label.Length >= 1 && label.Length <= 21))
             {
-                throw new ArgumentException(string.Format(LabelErrorMessage, label));
+                throw new ArgumentException(string.Format(LABEL_ERROR_MESSAGE_INVALID_LENGTH, label));
+            }
+
+            if (!Regex.IsMatch(label, LABEL_PATTERN))
+            {
+                if (!Regex.IsMatch(label, "^[a-z]"))
+                {
+                    throw new ArgumentException(string.Format(LABEL_ERROR_MESSAGE_START_CHAR, label));
+                }
+                throw new ArgumentException(string.Format(LABEL_ERROR_MESSAGE_INVALID_CHAR, label));
             }
 
             return label.Length > 6 ? label.Substring(0, 6) : label;
@@ -98,12 +109,12 @@ namespace SIC.Assembler.Providers.SymbolTable
 
             rFlag = rFlag.Trim().ToLower();
 
-            if (!Regex.IsMatch(rFlag, RFlagPattern))
+            if (!Regex.IsMatch(rFlag, RFLAG_PATTERN))
             {
-                throw new ArgumentException(string.Format(RFlagErrorMessage, rFlag));
+                throw new ArgumentException(string.Format(RFLAG_ERROR_MESSAGE, rFlag));
             }
 
-            return Regex.IsMatch(rFlag, RFlagTruePattern);
+            return Regex.IsMatch(rFlag, RFLAG_TRUE_PATTERN);
         }
 
         public static int ParseSymbolValue(string value)
@@ -115,9 +126,9 @@ namespace SIC.Assembler.Providers.SymbolTable
 
             value = value.Trim();
 
-            if (!Regex.IsMatch(value, ValuePattern))
+            if (!Regex.IsMatch(value, VALUE_PATTERN))
             {
-                throw new ArgumentException(string.Format(ValueErrorMessage, value));
+                throw new ArgumentException(string.Format(VALUE_ERROR_MESSAGE, value));
             }
 
             return int.Parse(value);
