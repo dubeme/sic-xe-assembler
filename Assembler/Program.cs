@@ -1,52 +1,54 @@
-﻿using SIC.Assembler.Utilities.BinarySearchTree;
+﻿using SIC.Assembler.Providers.SymbolTable;
+using SIC.Assembler.Utilities.BinarySearchTree;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIC.Assembler
 {
     internal class Program
     {
-        private static void change(List<StringBuilder> strLst)
-        {
-            var temp = strLst[0];
-            
-            temp = new StringBuilder("New value - 0");
-            strLst[1] = new StringBuilder("New value - 1");
-            strLst[2] = new StringBuilder("New value - 2");
-        }
+        const string ENTER_TO_PROCEED = "Press enter to proceed ...";
 
         private static void Main(string[] args)
         {
-            int n;
-            var num = int.TryParse("2323", out n);
-            List<StringBuilder> strLst = new List<StringBuilder>
-            {
-                new StringBuilder("A"),
-                new StringBuilder("B"),
-                new StringBuilder("C"),
-                new StringBuilder("D")
-            };
+            Console.BufferWidth = 256;
+            Console.BufferHeight = short.MaxValue - 1;
 
-            BSTNode<int> k = new BSTNode<int>
-            {
-                Value = 3
-            };
-            k.Left = new BSTNode<int>
-            {
-                Value = 1
-            };
-            k.Right = new BSTNode<int>
-            {
-                Value = 6
-            };
+            Prompt("Start building symbol tree.", ENTER_TO_PROCEED);
+            var symbolTree = SymbolTreeProvider.BuildSymbolTree("symbols.dat", PrintWithTabPrefix, PrintFancyError);
 
-            var temp = k.Right;
-            temp = null;
+            Prompt("\n\nPerform lookup on the symbol tree.", ENTER_TO_PROCEED);
+            SymbolTreeProvider.PerformLookupOnSymbolTree(symbolTree, "test.dat", PrintWithTabPrefix, PrintFancyError);
 
-            Console.WriteLine(string.Format("{0,-10}{1,-10}{2,-10}{3,-10}{4,-10}", 0,1,2,3,4,5));
+            Prompt("\n\nPrint tree in order.", ENTER_TO_PROCEED);
+            symbolTree.Print(TraverseOrder.InOrder, PrintWithTabPrefix);
 
-            change(strLst);
+            Prompt("\n\n", "Press Enter to terminate...");
+        }
+
+        private static void Print(object obj, string prefix = "")
+        {
+            Console.WriteLine(prefix + obj);
+        }
+
+        private static void PrintFancyError(object obj)
+        {
+            var previousForground = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            PrintWithTabPrefix(obj);
+            Console.ForegroundColor = previousForground;
+        }
+
+        private static void PrintWithTabPrefix(object obj)
+        {
+            Print(obj, "\t");
+        }
+
+        private static void Prompt(string message, string proceed)
+        {
+            Console.WriteLine(message);
+            Console.WriteLine(proceed);
+            Console.WriteLine();
+            Console.ReadLine();
         }
     }
 }
