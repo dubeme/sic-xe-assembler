@@ -28,14 +28,14 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void Parse_EmptyString()
         {
             Symbol.Parse(string.Empty);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void Parse_EmptyStringQuoted()
         {
             Symbol.Parse("");
@@ -49,14 +49,14 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void Parse_null()
         {
             Symbol.Parse(null);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void Parse_WhiteSpaces()
         {
             Symbol.Parse("    ");
@@ -71,21 +71,21 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolLabel_InvalidArgument_EmptyString()
         {
             Symbol.ParseSymbolLabel(string.Empty);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolLabel_InvalidArgument_EmptyStringQuoted()
         {
             Symbol.ParseSymbolLabel("");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolLabel_InvalidArgument_null()
         {
             Symbol.ParseSymbolLabel(null);
@@ -133,21 +133,21 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolRFlag_InvalidArgument_EmptyString()
         {
             Symbol.ParseSymbolRFlag(string.Empty);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolRFlag_InvalidArgument_EmptyStringQuoted()
         {
             Symbol.ParseSymbolRFlag("");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolRFlag_InvalidArgument_null()
         {
             Symbol.ParseSymbolRFlag(null);
@@ -171,28 +171,28 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolValue_InvalidArgument_EmptyString()
         {
             Symbol.ParseSymbolValue(string.Empty);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolValue_InvalidArgument_EmptyStringQuoted()
         {
             Symbol.ParseSymbolValue("");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolValue_InvalidArgument_null()
         {
             Symbol.ParseSymbolValue(null);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OverflowException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolValue_InvalidArgument_OutOfBounds()
         {
             Symbol.ParseSymbolValue("87263487623874");
