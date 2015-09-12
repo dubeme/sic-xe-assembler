@@ -6,7 +6,7 @@ namespace SIC.Assembler
 {
     internal class Program
     {
-        const string ENTER_TO_PROCEED = "Press enter to proceed ...";
+        private const string ENTER_TO_PROCEED = "Press enter to proceed ...";
 
         private static void Main(string[] args)
         {
@@ -27,7 +27,11 @@ namespace SIC.Assembler
 
         private static void Print(object obj, string prefix = "")
         {
-            Console.WriteLine(prefix + obj);
+            if (prefix != null)
+            {
+                var str = prefix + obj.ToString().Replace("\n", "\n" + prefix);
+                Console.WriteLine(str);
+            }
         }
 
         private static void PrintFancyError(object obj)

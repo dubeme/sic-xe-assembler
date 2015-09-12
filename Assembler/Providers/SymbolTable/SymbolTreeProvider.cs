@@ -18,16 +18,26 @@ namespace SIC.Assembler.Providers.SymbolTable
             {
                 try
                 {
+                    var duplicateSymbol = false;
                     var symbol = Symbol.Parse(codeLine);
                     symbolTree.Insert(symbol, (Symbol sym) =>
                     {
                         sym.MFlag = true;
+                        duplicateSymbol = true;
                     });
-                    printFunction(string.Format("Inserted symbol - {0}", symbol.Label));
+
+                    if (duplicateSymbol)
+                    {
+                        printFunction(string.Format("Symbol {{{0}}} already exists. M Flag set to true", symbol.Label));
+                    }
+                    else
+                    {
+                        printFunction(string.Format("Inserted symbol {{{0}}}", symbol.Label));
+                    }
                 }
                 catch (Exception ex)
                 {
-                    errorPrintFunction(ex.Message);
+                    errorPrintFunction(ex.Message + "\n");
                 }
             }
 
