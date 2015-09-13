@@ -4,8 +4,18 @@ using System;
 
 namespace SIC.Assembler.Providers.SymbolTable
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class SymbolTreeProvider
     {
+        /// <summary>
+        /// Builds the symbol tree.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="printFunction">The print function.</param>
+        /// <param name="errorPrintFunction">The error print function.</param>
+        /// <returns></returns>
         public static Tree<Symbol> BuildSymbolTree(string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
         {
             var symbolTree = new Tree<Symbol>();
@@ -44,6 +54,13 @@ namespace SIC.Assembler.Providers.SymbolTable
             return symbolTree;
         }
 
+        /// <summary>
+        /// Performs the lookup on symbol tree.
+        /// </summary>
+        /// <param name="symbolTree">The symbol tree.</param>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="printFunction">The print function.</param>
+        /// <param name="errorPrintFunction">The error print function.</param>
         public static void PerformLookupOnSymbolTree(Tree<Symbol> symbolTree, string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
         {
             var symbolLabels = HelperMethods.GetAllNonEmptyLines(filePath);

@@ -4,6 +4,9 @@ using System;
 
 namespace SIC.Assembler
 {
+    /// <summary>
+    /// 
+    /// </summary>
     internal class Program
     {
         private const string ENTER_TO_PROCEED = "Press enter to proceed ...";

@@ -4,14 +4,28 @@ using System.Collections.Generic;
 
 namespace SIC.Assembler.Utilities.BinarySearchTree
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Tree<T> where T : IComparable
     {
+        /// <summary>
+        /// The _ root
+        /// </summary>
         private BSTNode<T> _Root;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tree{T}"/> class.
+        /// </summary>
         public Tree()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Tree{T}"/> class.
+        /// </summary>
+        /// <param name="items">The items.</param>
         public Tree(IList<T> items)
         {
             if (items != null)
@@ -23,6 +37,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Finds the node.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public BSTNode<T> FindNode(object value)
         {
             if (this._Root == null)
@@ -33,6 +52,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             return this.Find(value, this._Root);
         }
 
+        /// <summary>
+        /// Finds the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public T FindValue(object value)
         {
             var node = FindNode(value);
@@ -45,6 +69,12 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             return node.Value;
         }
 
+        /// <summary>
+        /// Inserts the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="duplicateHandler">The duplicate handler.</param>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public void Insert(T item, Action<T> duplicateHandler = null)
         {
             if (item == null)
@@ -65,6 +95,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Prints the specified traverse order.
+        /// </summary>
+        /// <param name="traverseOrder">The traverse order.</param>
+        /// <param name="printFunction">The print function.</param>
         public void Print(TraverseOrder traverseOrder = TraverseOrder.InOrder, Action<object> printFunction = null)
         {
             printFunction = printFunction ?? new Action<object>((value) =>
@@ -92,6 +127,10 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Removes the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
         public void Remove(T item)
         {
             if (this._Root == null)
@@ -102,6 +141,12 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             this.Remove(item, ref this._Root);
         }
 
+        /// <summary>
+        /// Detaches the biggest node with no child.
+        /// </summary>
+        /// <param name="root">The root.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">Root can't be null</exception>
         private BSTNode<T> DetachBiggestNodeWithNoChild(ref BSTNode<T> root)
         {
             BSTNode<T> detachedNode = null;
@@ -160,6 +205,13 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             return detachedNode;
         }
 
+        /// <summary>
+        /// Finds the specified value to find.
+        /// </summary>
+        /// <param name="valueToFind">The value to find.</param>
+        /// <param name="currentNode">The current node.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">Can't search for a null value</exception>
         private BSTNode<T> Find(object valueToFind, BSTNode<T> currentNode)
         {
             if (valueToFind == null)
@@ -190,6 +242,13 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Inserts the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="currentNode">The current node.</param>
+        /// <param name="duplicateHandler">The duplicate handler.</param>
+        /// <exception cref="System.ArgumentNullException">Can't insert null into the tree</exception>
         private void Insert(T item, BSTNode<T> currentNode, Action<T> duplicateHandler)
         {
             if (currentNode == null)
@@ -243,6 +302,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Prints the in order.
+        /// </summary>
+        /// <param name="currentNode">The current node.</param>
+        /// <param name="printFunction">The print function.</param>
         private void PrintInOrder(BSTNode<T> currentNode, Action<object> printFunction)
         {
             if (currentNode != null)
@@ -253,6 +317,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Prints the level order.
+        /// </summary>
+        /// <param name="currentNode">The current node.</param>
+        /// <param name="printFunction">The print function.</param>
         private void PrintLevelOrder(BSTNode<T> currentNode, Action<object> printFunction)
         {
             if (currentNode != null)
@@ -291,6 +360,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Prints the post order.
+        /// </summary>
+        /// <param name="currentNode">The current node.</param>
+        /// <param name="printFunction">The print function.</param>
         private void PrintPostOrder(BSTNode<T> currentNode, Action<object> printFunction)
         {
             if (currentNode != null)
@@ -301,6 +375,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Prints the pre order.
+        /// </summary>
+        /// <param name="currentNode">The current node.</param>
+        /// <param name="printFunction">The print function.</param>
         private void PrintPreOrder(BSTNode<T> currentNode, Action<object> printFunction)
         {
             if (currentNode != null)
@@ -311,6 +390,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
             }
         }
 
+        /// <summary>
+        /// Removes the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="currentRootNode">The current root node.</param>
         private void Remove(T item, ref BSTNode<T> currentRootNode)
         {
             if (item.IsEqual(currentRootNode.Value))

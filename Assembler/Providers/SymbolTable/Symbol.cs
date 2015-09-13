@@ -6,14 +6,29 @@ using System.Text.RegularExpressions;
 namespace SIC.Assembler.Providers.SymbolTable
 {
     /// <summary>
-    ///
+    /// 
     /// </summary>
     public class Symbol : IComparable
     {
+        /// <summary>
+        /// The labe l_ pattern
+        /// </summary>
         public const string LABEL_PATTERN = "^([a-z])[\\w]{1,20}$";
+        /// <summary>
+        /// The rfla g_ fals e_ pattern
+        /// </summary>
         public const string RFLAG_FALSE_PATTERN = "^(false)$|^(f)$|^(0)$";
+        /// <summary>
+        /// The rfla g_ pattern
+        /// </summary>
         public const string RFLAG_PATTERN = "^(true|false)$|^(t|f)$|^(1|0)$";
+        /// <summary>
+        /// The rfla g_ tru e_ pattern
+        /// </summary>
         public const string RFLAG_TRUE_PATTERN = "^(true)$|^(t)$|^(1)$";
+        /// <summary>
+        /// The valu e_ pattern
+        /// </summary>
         public const string VALUE_PATTERN = "^(\\+|-)?\\d+$";
 
         /// <summary>
@@ -40,14 +55,16 @@ namespace SIC.Assembler.Providers.SymbolTable
         /// Parses the specified string.
         /// </summary>
         /// <param name="codeLine">The string.</param>
-        /// <returns>A symbol object</returns>
+        /// <returns>
+        /// A symbol object
+        /// </returns>
+        /// <exception cref="System.ArgumentException">
+        /// </exception>
         /// <exception cref="ArgumentNullException">Input string can't be null OR empty.</exception>
-        /// <exception cref="ArgumentException">
-        /// The input doesn't have the correct amount of tokens [3].
+        /// <exception cref="ArgumentException">The input doesn't have the correct amount of tokens [3].
         /// or The wrong value is provided for the Value
         /// or The wrong value is provided for the Symbol label
-        /// or The wrong value is provided for the R Flag
-        /// </exception>
+        /// or The wrong value is provided for the R Flag</exception>
         public static Symbol Parse(string codeLine)
         {
             if (string.IsNullOrWhiteSpace(codeLine))
@@ -72,10 +89,19 @@ namespace SIC.Assembler.Providers.SymbolTable
             };
         }
 
+        /// <summary>
+        /// Parses the symbol label.
+        /// </summary>
+        /// <param name="label">The label.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">
+        /// </exception>
+        /// <exception cref="System.ArgumentException"></exception>
         public static string ParseSymbolLabel(string label)
         {
             string reason = "";
             string expected = "";
+            string actual = label;
 
             try
             {
@@ -106,13 +132,21 @@ namespace SIC.Assembler.Providers.SymbolTable
             }
             catch (Exception)
             {
-                var err = InvalidSymbolMessage("Label", reason, expected, label);
+                var err = InvalidSymbolMessage("Label", reason, expected, actual);
                 throw new ArgumentException(err);
             }
         }
 
+        /// <summary>
+        /// Parses the symbol r flag.
+        /// </summary>
+        /// <param name="rFlag">The r flag.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        /// <exception cref="System.ArgumentException"></exception>
         public static bool ParseSymbolRFlag(string rFlag)
         {
+            var actual = rFlag;
             try
             {
                 rFlag = rFlag.Trim().ToLower();
@@ -126,13 +160,21 @@ namespace SIC.Assembler.Providers.SymbolTable
             }
             catch (Exception)
             {
-                var err = InvalidSymbolMessage("R Flag", "Not a valid boolean value", "[true\\false, t\\f, 1\\0]", rFlag);
+                var err = InvalidSymbolMessage("R Flag", "Not a valid boolean value", "[true\\false, t\\f, 1\\0]", actual);
                 throw new ArgumentException(err);
             }
         }
 
+        /// <summary>
+        /// Parses the symbol value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        /// <exception cref="System.ArgumentException"></exception>
         public static int ParseSymbolValue(string value)
         {
+            var actual = value;
             try
             {
                 value = value.Trim();
@@ -144,7 +186,7 @@ namespace SIC.Assembler.Providers.SymbolTable
             }
             catch (Exception)
             {
-                var err = InvalidSymbolMessage("Value", "Not a valid integer", "32 bit integer", value);
+                var err = InvalidSymbolMessage("Value", "Not a valid integer", "32 bit integer", actual);
                 throw new ArgumentException(err);
             }
         }
@@ -170,6 +212,11 @@ namespace SIC.Assembler.Providers.SymbolTable
             return symbol != null;
         }
 
+        /// <summary>
+        /// Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns></returns>
         public int CompareTo(object obj)
         {
             if (obj is string)
@@ -183,11 +230,25 @@ namespace SIC.Assembler.Providers.SymbolTable
             return this.Label.CompareTo(other.Label);
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return string.Format("{0, -15}{1, -15}{2, -15}{3, -15}", this.Label, this.Value, this.RFlag, this.MFlag);
         }
 
+        /// <summary>
+        /// Invalids the symbol message.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <param name="reason">The reason.</param>
+        /// <param name="expected">The expected.</param>
+        /// <param name="actual">The actual.</param>
+        /// <returns></returns>
         private static string InvalidSymbolMessage(string property, string reason, string expected, string actual)
         {
             if (string.IsNullOrWhiteSpace(actual))
