@@ -1,11 +1,12 @@
-﻿using SIC.Assembler.Utilities.BinarySearchTree;
+﻿using SIC.Assembler.Utilities.Collections;
+using SIC.Assembler.Utilities.Model;
 using System;
 
 namespace Assembler.UnitTest.Utilities.BinarySearchTree
 {
     public class TreeUtilities
     {
-        public static Tree<T> CreateTree<T>(params T[] values) where T : IComparable
+        public static BinarySearchTree<T> CreateTree<T>(params T[] values) where T : IComparable
         {
             var root = TreeUtilities.MockTree<T>();
 
@@ -26,9 +27,9 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
             };
         }
 
-        public static Tree<T> MockTree<T>() where T : IComparable
+        public static BinarySearchTree<T> MockTree<T>() where T : IComparable
         {
-            return new Tree<T> { };
+            return new BinarySearchTree<T> { };
         }
     }
 }

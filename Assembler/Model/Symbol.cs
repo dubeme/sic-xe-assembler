@@ -1,35 +1,42 @@
-﻿using SIC.Assembler.Utilities;
-using System;
+﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SIC.Assembler.Providers.SymbolTable
+namespace SIC.Assembler.Model
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class Symbol : IComparable
     {
         /// <summary>
         /// The labe l_ pattern
         /// </summary>
-        public const string LABEL_PATTERN = "^([a-z])[\\w]{1,20}$";
+        public const string LABEL_PATTERN = "^([a-z])[\\w]{0,20}$";
+
         /// <summary>
         /// The rfla g_ fals e_ pattern
         /// </summary>
         public const string RFLAG_FALSE_PATTERN = "^(false)$|^(f)$|^(0)$";
+
         /// <summary>
         /// The rfla g_ pattern
         /// </summary>
         public const string RFLAG_PATTERN = "^(true|false)$|^(t|f)$|^(1|0)$";
+
         /// <summary>
         /// The rfla g_ tru e_ pattern
         /// </summary>
         public const string RFLAG_TRUE_PATTERN = "^(true)$|^(t)$|^(1)$";
+
         /// <summary>
         /// The valu e_ pattern
         /// </summary>
         public const string VALUE_PATTERN = "^(\\+|-)?\\d+$";
+
+        private const int LABEL_MAX_LENGTH = 21;
+        private const int LABEL_MIN_LENGTH = 1;
+        private const int LABEL_TRIM_LENGTH = 21;
 
         /// <summary>
         /// Gets or sets the label of this Symbol.
@@ -107,10 +114,10 @@ namespace SIC.Assembler.Providers.SymbolTable
             {
                 label = label.Trim().ToLower();
 
-                if (!(label.Length >= 1 && label.Length <= 21))
+                if (!(label.Length >= LABEL_MIN_LENGTH && label.Length <= LABEL_MAX_LENGTH))
                 {
                     reason = "Out of range";
-                    expected = "[1,21] Aphabets, Numbers and Underscore";
+                    expected = string.Format("[{0},{1}] Aphabets, Numbers and Underscore", LABEL_MIN_LENGTH, LABEL_MAX_LENGTH);
                     throw new Exception();
                 }
 
@@ -128,7 +135,7 @@ namespace SIC.Assembler.Providers.SymbolTable
                     throw new Exception();
                 }
 
-                return label.Length > 6 ? label.Substring(0, 6) : label;
+                return label.Length > LABEL_TRIM_LENGTH ? label.Substring(0, LABEL_TRIM_LENGTH) : label;
             }
             catch (Exception)
             {
@@ -265,9 +272,9 @@ namespace SIC.Assembler.Providers.SymbolTable
 
             StringBuilder errMsg = new StringBuilder();
             errMsg.AppendLine("Invalid Symbol " + property);
-            errMsg.Append("\t" + string.Format("{0, -10}{1}\n", "Reason:",reason));
-            errMsg.Append("\t" + string.Format("{0, -10}{1}\n", "Expected:",expected));
-            errMsg.Append("\t" + string.Format("{0, -10}{1}", "Actual:",actual));
+            errMsg.Append("\t" + string.Format("{0, -10}{1}\n", "Reason:", reason));
+            errMsg.Append("\t" + string.Format("{0, -10}{1}\n", "Expected:", expected));
+            errMsg.Append("\t" + string.Format("{0, -10}{1}", "Actual:", actual));
 
             return errMsg.ToString();
         }

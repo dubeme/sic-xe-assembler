@@ -1,14 +1,15 @@
 ﻿using SIC.Assembler.Utilities.Extensions;
+using SIC.Assembler.Utilities.Model;
 using System;
 using System.Collections.Generic;
 
-namespace SIC.Assembler.Utilities.BinarySearchTree
+namespace SIC.Assembler.Utilities.Collections
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Tree<T> where T : IComparable
+    public class BinarySearchTree<T> where T : IComparable
     {
         /// <summary>
         /// The _ root
@@ -16,17 +17,17 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
         private BSTNode<T> _Root;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Tree{T}"/> class.
+        /// Initializes a new instance of the <see cref="BinarySearchTree{T}"/> class.
         /// </summary>
-        public Tree()
+        public BinarySearchTree()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Tree{T}"/> class.
+        /// Initializes a new instance of the <see cref="BinarySearchTree{T}"/> class.
         /// </summary>
         /// <param name="items">The items.</param>
-        public Tree(IList<T> items)
+        public BinarySearchTree(IList<T> items)
         {
             if (items != null)
             {

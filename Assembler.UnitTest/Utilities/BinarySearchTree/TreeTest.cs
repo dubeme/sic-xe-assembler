@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SIC.Assembler.Utilities.BinarySearchTree;
+using SIC.Assembler.Utilities.Collections;
+using SIC.Assembler.Utilities.Model;
 
 namespace Assembler.UnitTest.Utilities.BinarySearchTree
 {
@@ -9,14 +10,14 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
         [TestMethod]
         public void CheckTreeHeight()
         {
-            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            BinarySearchTree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
             Assert.AreEqual(3, root.FindNode(5).Height);
         }
 
         [TestMethod]
         public void CreateTree()
         {
-            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            BinarySearchTree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
             string printOut = "";
 
             root.Print(TraverseOrder.InOrder, printFunction: (item) =>
@@ -30,7 +31,7 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
         [TestMethod]
         public void DeleteNode()
         {
-            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            BinarySearchTree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
             string printOut = "";
 
             root.Remove(5);
@@ -46,7 +47,7 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
         [TestMethod]
         public void Find()
         {
-            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            BinarySearchTree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
             Assert.IsTrue(root.FindNode(5).LeftAndRightNodeIsSet, "Left and right node should have been set (3,8)");
             Assert.IsFalse(root.FindNode(1).LeftOrRightNodeIsSet, "Left and right node shouldn't be set");
             Assert.IsNull(root.FindNode(800), "800 shouldn't exist in the tree");
@@ -55,7 +56,7 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
         [TestMethod]
         public void PrintTree_InOder()
         {
-            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            BinarySearchTree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
             string printOut = "";
 
             root.Remove(5);
@@ -70,7 +71,7 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
         [TestMethod]
         public void PrintTree_LevelOrder()
         {
-            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            BinarySearchTree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
             string printOut = "";
 
             root.Remove(5);
@@ -88,7 +89,7 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
         [TestMethod]
         public void PrintTree_PostOrder()
         {
-            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            BinarySearchTree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
             string printOut = "";
 
             root.Remove(5);
@@ -103,7 +104,7 @@ namespace Assembler.UnitTest.Utilities.BinarySearchTree
         [TestMethod]
         public void PrintTree_PreOrder()
         {
-            Tree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
+            BinarySearchTree<int> root = TreeUtilities.CreateTree(5, 3, 4, 2, 1, 8, 6, 9, 7);
             string printOut = "";
 
             root.Remove(5);

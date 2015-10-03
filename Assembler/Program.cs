@@ -1,5 +1,5 @@
 ﻿using SIC.Assembler.Providers.SymbolTable;
-using SIC.Assembler.Utilities.BinarySearchTree;
+using SIC.Assembler.Utilities.Model;
 using System;
 
 namespace SIC.Assembler

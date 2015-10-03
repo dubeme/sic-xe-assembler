@@ -43,18 +43,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Literal.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\SymbolTable\Symbol.cs" />
+    <Compile Include="Model\Operand.cs" />
+    <Compile Include="Model\Symbol.cs" />
     <Compile Include="Providers\SymbolTable\SymbolTreeProvider.cs" />
-    <Compile Include="Utilities\BinarySearchTree\BSTNode.cs" />
-    <Compile Include="Utilities\BinarySearchTree\TraverseOrder.cs" />
-    <Compile Include="Utilities\BinarySearchTree\Tree.cs" />
+    <Compile Include="Utilities\Model\BSTNode.cs" />
+    <Compile Include="Utilities\Model\TraverseOrder.cs" />
+    <Compile Include="Utilities\Collections\BinarySearchTree.cs" />
     <Compile Include="Utilities\Extensions\Comparison.cs" />
     <Compile Include="Utilities\HelperMethods.cs" />
+    <Compile Include="Utilities\Collections\SortedLinkedList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Providers\Expresion\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,11 +1,12 @@
-﻿using SIC.Assembler.Utilities;
-using SIC.Assembler.Utilities.BinarySearchTree;
+﻿using SIC.Assembler.Model;
+using SIC.Assembler.Utilities;
+using SIC.Assembler.Utilities.Collections;
 using System;
 
 namespace SIC.Assembler.Providers.SymbolTable
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class SymbolTreeProvider
     {
@@ -16,9 +17,9 @@ namespace SIC.Assembler.Providers.SymbolTable
         /// <param name="printFunction">The print function.</param>
         /// <param name="errorPrintFunction">The error print function.</param>
         /// <returns></returns>
-        public static Tree<Symbol> BuildSymbolTree(string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
+        public static BinarySearchTree<Symbol> BuildSymbolTree(string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
         {
-            var symbolTree = new Tree<Symbol>();
+            var symbolTree = new BinarySearchTree<Symbol>();
             var codeLines = HelperMethods.GetAllNonEmptyLines(filePath);
 
             printFunction = printFunction ?? Console.WriteLine;
@@ -61,7 +62,7 @@ namespace SIC.Assembler.Providers.SymbolTable
         /// <param name="filePath">The file path.</param>
         /// <param name="printFunction">The print function.</param>
         /// <param name="errorPrintFunction">The error print function.</param>
-        public static void PerformLookupOnSymbolTree(Tree<Symbol> symbolTree, string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
+        public static void PerformLookupOnSymbolTree(BinarySearchTree<Symbol> symbolTree, string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
         {
             var symbolLabels = HelperMethods.GetAllNonEmptyLines(filePath);
             printFunction = printFunction ?? Console.WriteLine;

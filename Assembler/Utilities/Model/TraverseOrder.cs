@@ -1,4 +1,4 @@
-﻿namespace SIC.Assembler.Utilities.BinarySearchTree
+﻿namespace SIC.Assembler.Utilities.Model
 {
     public enum TraverseOrder
     {

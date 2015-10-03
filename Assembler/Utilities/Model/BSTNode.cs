@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SIC.Assembler.Utilities.BinarySearchTree
+﻿namespace SIC.Assembler.Utilities.Model
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BSTNode<T>
@@ -16,18 +10,11 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
         /// Gets or sets the height of this BSTNode{T}.
         /// </summary>
         public int Height { get; set; }
-        /// <summary>
-        /// Gets or sets the value of this BSTNode{T}.
-        /// </summary>
-        public T Value { get; set; }
+
         /// <summary>
         /// Gets or sets the left of this BSTNode{T}.
         /// </summary>
         public BSTNode<T> Left { get; set; }
-        /// <summary>
-        /// Gets or sets the right of this BSTNode{T}.
-        /// </summary>
-        public BSTNode<T> Right { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether [left and right node is set].
@@ -39,16 +26,7 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                 return this.LeftNodeIsSet && this.RightNodeIsSet;
             }
         }
-        /// <summary>
-        /// Gets a value indicating whether [left or right node is set].
-        /// </summary>
-        public bool LeftOrRightNodeIsSet
-        {
-            get
-            {
-                return this.LeftNodeIsSet || this.RightNodeIsSet;
-            }
-        }
+
         /// <summary>
         /// Gets a value indicating whether [left node is set].
         /// </summary>
@@ -59,6 +37,23 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                 return this.Left != null;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether [left or right node is set].
+        /// </summary>
+        public bool LeftOrRightNodeIsSet
+        {
+            get
+            {
+                return this.LeftNodeIsSet || this.RightNodeIsSet;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the right of this BSTNode{T}.
+        /// </summary>
+        public BSTNode<T> Right { get; set; }
+
         /// <summary>
         /// Gets a value indicating whether [right node is set].
         /// </summary>
@@ -69,5 +64,10 @@ namespace SIC.Assembler.Utilities.BinarySearchTree
                 return this.Right != null;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the value of this BSTNode{T}.
+        /// </summary>
+        public T Value { get; set; }
     }
 }

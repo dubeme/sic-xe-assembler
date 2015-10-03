@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SIC.Assembler.Utilities.BinarySearchTree;
+using SIC.Assembler.Utilities.Model;
 
 namespace Assembler.UnitTest.Utilities.BinarySearchTree
 {

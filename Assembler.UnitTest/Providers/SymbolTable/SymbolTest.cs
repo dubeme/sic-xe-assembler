@@ -1,13 +1,12 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SIC.Assembler.Providers.SymbolTable;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SIC.Assembler.Model;
+using System;
 
 namespace Assembler.UnitTest.Providers.SymbolTable
 {
     [TestClass]
     public class SymbolTest
     {
-
         [TestMethod]
         public void Parse()
         {
@@ -186,6 +185,13 @@ namespace Assembler.UnitTest.Providers.SymbolTable
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
+        public void ParseSymbolValue_InvalidArgument_NonNumericCharacters()
+        {
+            Symbol.ParseSymbolValue("#$#$87263487623874");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public void ParseSymbolValue_InvalidArgument_null()
         {
             Symbol.ParseSymbolValue(null);
@@ -196,13 +202,6 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         public void ParseSymbolValue_InvalidArgument_OutOfBounds()
         {
             Symbol.ParseSymbolValue("87263487623874");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void ParseSymbolValue_InvalidArgument_NonNumericCharacters()
-        {
-            Symbol.ParseSymbolValue("#$#$87263487623874");
         }
 
         [TestMethod]
