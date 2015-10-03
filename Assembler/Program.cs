@@ -1,4 +1,4 @@
-﻿using SIC.Assembler.Providers.SymbolTable;
+﻿using SIC.Assembler.Providers;
 using SIC.Assembler.Utilities.Model;
 using System;
 
@@ -17,10 +17,10 @@ namespace SIC.Assembler
             Console.BufferHeight = short.MaxValue - 1;
 
             Prompt("Start building symbol tree.", ENTER_TO_PROCEED);
-            var symbolTree = SymbolTreeProvider.BuildSymbolTree("symbols.dat", PrintWithTabPrefix, PrintFancyError);
+            var symbolTree = SymbolTable.BuildSymbolTree("symbols.dat", PrintWithTabPrefix, PrintFancyError);
 
             Prompt("\n\nPerform lookup on the symbol tree.", ENTER_TO_PROCEED);
-            SymbolTreeProvider.PerformLookupOnSymbolTree(symbolTree, "test.dat", PrintWithTabPrefix, PrintFancyError);
+            SymbolTable.PerformLookupOnSymbolTree(symbolTree, "test.dat", PrintWithTabPrefix, PrintFancyError);
 
             Prompt("\n\nPrint tree in order.", ENTER_TO_PROCEED);
             symbolTree.Print(TraverseOrder.InOrder, PrintWithTabPrefix);

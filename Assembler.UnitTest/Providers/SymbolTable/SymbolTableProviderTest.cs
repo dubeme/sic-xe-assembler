@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SIC.Assembler.Model;
-using SIC.Assembler.Providers.SymbolTable;
+using SIC.Assembler.Providers;
 
 namespace Assembler.UnitTest.Providers.SymbolTable
 {
@@ -12,16 +12,16 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         [TestMethod]
         public void BuildSymbol()
         {
-            var symbolTree = SymbolTreeProvider.BuildSymbolTree(FILE_DIR + "symbol.txt");
+            var symbolTree = SIC.Assembler.Providers.SymbolTable.BuildSymbolTree(FILE_DIR + "symbol.txt");
             Assert.IsTrue(symbolTree.FindValue(Symbol.ParseSymbolLabel("Balling")).MFlag, "M Flag should be set");
         }
 
         [TestMethod]
         public void TestSymbolTree()
         {
-            var symbolTree = SymbolTreeProvider.BuildSymbolTree(FILE_DIR + "symbol.txt");
+            var symbolTree = SIC.Assembler.Providers.SymbolTable.BuildSymbolTree(FILE_DIR + "symbol.txt");
             string output = "";
-            SymbolTreeProvider.PerformLookupOnSymbolTree(symbolTree, FILE_DIR + "test.txt", (symbol) =>
+            SIC.Assembler.Providers.SymbolTable.PerformLookupOnSymbolTree(symbolTree, FILE_DIR + "test.txt", (symbol) =>
             {
                 output += symbol + "\n";
             });

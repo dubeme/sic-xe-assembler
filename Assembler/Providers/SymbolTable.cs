@@ -3,12 +3,12 @@ using SIC.Assembler.Utilities;
 using SIC.Assembler.Utilities.Collections;
 using System;
 
-namespace SIC.Assembler.Providers.SymbolTable
+namespace SIC.Assembler.Providers
 {
     /// <summary>
     ///
     /// </summary>
-    public class SymbolTreeProvider
+    public class SymbolTable
     {
         /// <summary>
         /// Builds the symbol tree.
