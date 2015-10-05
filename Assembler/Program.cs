@@ -36,7 +36,7 @@ namespace SIC.Assembler
                 "#five",
                 "six, x",
                 "#9",
-                "=x'o3'",
+                "=x'03'",
                 "=c'ABC'",
                 "FOUR + 4",
                 "=X'03'",

@@ -50,6 +50,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\Operand.cs" />
     <Compile Include="Model\Symbol.cs" />
+    <Compile Include="Providers\LiteralTable.cs" />
     <Compile Include="Providers\OperandEvaluator.cs" />
     <Compile Include="Providers\SymbolTable.cs" />
     <Compile Include="Utilities\Model\BSTNode.cs" />
@@ -57,7 +58,7 @@
     <Compile Include="Utilities\Collections\BinarySearchTree.cs" />
     <Compile Include="Utilities\Extensions\Comparison.cs" />
     <Compile Include="Utilities\HelperMethods.cs" />
-    <Compile Include="Utilities\Collections\SortedLinkedList.cs" />
+    <Compile Include="Utilities\Collections\NonDuplicateLinkedList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -17,15 +17,13 @@ namespace SIC.Assembler.Model
         public static string HeaderText()
         {
             StringBuilder str = new StringBuilder();
-            str.AppendFormat(FormatString, "Input Expr", "Value", "Relocatable", "Index", "Indirect", "Immediate");
+            str.AppendFormat(FormatString, "Input Expression", "Value", "Relocatable", "Index", "Indirect", "Immediate");
             str.AppendLine();
 
             for (int i = 0; i < PrintMaxLength; i++)
             {
                 str.Append("-");
             }
-
-            str.AppendLine();
 
             return str.ToString();
         }
