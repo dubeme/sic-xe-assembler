@@ -1,6 +1,8 @@
 ﻿using SIC.Assembler.Providers;
+using SIC.Assembler.Utilities;
 using SIC.Assembler.Utilities.Model;
 using System;
+using System.Collections.Generic;
 
 namespace SIC.Assembler
 {
@@ -16,14 +18,39 @@ namespace SIC.Assembler
             Console.BufferWidth = 256;
             Console.BufferHeight = short.MaxValue - 1;
 
+            var symbolTable = new SymbolTable();
+            var codeLines = HelperMethods.GetAllNonEmptyLines("symbols.dat");
+            var symbolLabels = HelperMethods.GetAllNonEmptyLines("test.dat");
+
             Prompt("Start building symbol tree.", ENTER_TO_PROCEED);
-            var symbolTree = SymbolTable.BuildSymbolTree("symbols.dat", PrintWithTabPrefix, PrintFancyError);
+            symbolTable.BuildSymbolTable(codeLines, PrintWithTabPrefix, PrintFancyError);
 
             Prompt("\n\nPerform lookup on the symbol tree.", ENTER_TO_PROCEED);
-            SymbolTable.PerformLookupOnSymbolTree(symbolTree, "test.dat", PrintWithTabPrefix, PrintFancyError);
+            symbolTable.PerformLookupOnSymbolTree( symbolLabels, PrintWithTabPrefix, PrintFancyError);
+
+            IList<string> input = new List<string>
+            {
+                "one",
+                "two+74",
+                "@three",
+                "#five",
+                "six, x",
+                "#9",
+                "=x'o3'",
+                "=c'ABC'",
+                "FOUR + 4",
+                "=X'03'",
+                "@one",
+                "8",
+                "=x'03'",
+                "=c'03'",
+                "",
+            };
+            OperandEvaluator.ParseOperands(input, symbolTable);
+
 
             Prompt("\n\nPrint tree in order.", ENTER_TO_PROCEED);
-            symbolTree.Print(TraverseOrder.InOrder, PrintWithTabPrefix);
+            symbolTable.Print(TraverseOrder.InOrder, PrintWithTabPrefix);
 
             Prompt("\n\n", "Press Enter to terminate...");
         }

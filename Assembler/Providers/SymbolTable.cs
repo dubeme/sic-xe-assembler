@@ -1,6 +1,6 @@
 ﻿using SIC.Assembler.Model;
-using SIC.Assembler.Utilities;
 using SIC.Assembler.Utilities.Collections;
+using SIC.Assembler.Utilities.Model;
 using System;
 
 namespace SIC.Assembler.Providers
@@ -11,17 +11,19 @@ namespace SIC.Assembler.Providers
     public class SymbolTable
     {
         /// <summary>
-        /// Builds the symbol tree.
+        /// The _ symbol table
         /// </summary>
-        /// <param name="filePath">The file path.</param>
+        private BinarySearchTree<Symbol> _SymbolTable;
+
+        /// <summary>
+        /// Builds the symbol table.
+        /// </summary>
+        /// <param name="codeLines">The code lines.</param>
         /// <param name="printFunction">The print function.</param>
         /// <param name="errorPrintFunction">The error print function.</param>
-        /// <returns></returns>
-        public static BinarySearchTree<Symbol> BuildSymbolTree(string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
+        public void BuildSymbolTable(string[] codeLines, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
         {
-            var symbolTree = new BinarySearchTree<Symbol>();
-            var codeLines = HelperMethods.GetAllNonEmptyLines(filePath);
-
+            this._SymbolTable = new BinarySearchTree<Symbol>();
             printFunction = printFunction ?? Console.WriteLine;
             errorPrintFunction = errorPrintFunction ?? printFunction;
 
@@ -31,7 +33,7 @@ namespace SIC.Assembler.Providers
                 {
                     var duplicateSymbol = false;
                     var symbol = Symbol.Parse(codeLine);
-                    symbolTree.Insert(symbol, (Symbol sym) =>
+                    this._SymbolTable.Insert(symbol, (Symbol sym) =>
                     {
                         sym.MFlag = true;
                         duplicateSymbol = true;
@@ -51,42 +53,64 @@ namespace SIC.Assembler.Providers
                     errorPrintFunction(ex.Message + "\n");
                 }
             }
+        }
 
-            return symbolTree;
+        public Symbol FindSymbol(string label)
+        {
+            // Symbol.ParseSymbolLabel(label)
+            if (string.IsNullOrWhiteSpace(label))
+            {
+                return null;
+            }
+
+            return this._SymbolTable.FindValue(label.ToLower());
         }
 
         /// <summary>
         /// Performs the lookup on symbol tree.
         /// </summary>
-        /// <param name="symbolTree">The symbol tree.</param>
-        /// <param name="filePath">The file path.</param>
+        /// <param name="symbolLabels">A collection of symbol labels.</param>
         /// <param name="printFunction">The print function.</param>
         /// <param name="errorPrintFunction">The error print function.</param>
-        public static void PerformLookupOnSymbolTree(BinarySearchTree<Symbol> symbolTree, string filePath, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
+        public void PerformLookupOnSymbolTree(string[] symbolLabels, Action<object> printFunction = null, Action<object> errorPrintFunction = null)
         {
-            var symbolLabels = HelperMethods.GetAllNonEmptyLines(filePath);
             printFunction = printFunction ?? Console.WriteLine;
             errorPrintFunction = errorPrintFunction ?? printFunction;
 
-            foreach (var symbolLabel in symbolLabels)
+            if (this._SymbolTable != null)
             {
-                try
+                foreach (var symbolLabel in symbolLabels)
                 {
-                    var symbol = symbolTree.FindValue(Symbol.ParseSymbolLabel(symbolLabel));
+                    try
+                    {
+                        var symbol = this._SymbolTable.FindValue(Symbol.ParseSymbolLabel(symbolLabel));
 
-                    if (symbol != null)
-                    {
-                        printFunction(symbol);
+                        if (symbol != null)
+                        {
+                            printFunction(symbol);
+                        }
+                        else
+                        {
+                            errorPrintFunction(string.Format("The symbol \"{0}\" was not found.", symbolLabel));
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        errorPrintFunction(string.Format("The symbol \"{0}\" was not found.", symbolLabel));
+                        errorPrintFunction(ex.Message);
                     }
                 }
-                catch (Exception ex)
-                {
-                    errorPrintFunction(ex.Message);
-                }
+            }
+            else
+            {
+                errorPrintFunction("Symbol table not created");
+            }
+        }
+
+        public void Print(TraverseOrder order, Action<object> printFunction)
+        {
+            if (this._SymbolTable != null)
+            {
+                this._SymbolTable.Print(order, printFunction);
             }
         }
     }
