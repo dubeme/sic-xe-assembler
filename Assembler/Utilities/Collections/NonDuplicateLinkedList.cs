@@ -23,14 +23,6 @@ namespace SIC.Assembler.Utilities.Collections
             {
                 this.LinkedList = new LinkedList<T>(new T[] { item });
             }
-            else if (item.IsLessThan(this.LinkedList.First.Value))
-            {
-                this.LinkedList.AddFirst(item);
-            }
-            else if (item.IsGreaterThan(this.LinkedList.Last.Value))
-            {
-                this.LinkedList.AddLast(item);
-            }
             else
             {
                 foreach (var currentNodeItem in this.LinkedList)
@@ -39,20 +31,48 @@ namespace SIC.Assembler.Utilities.Collections
                     {
                         return item;
                     }
-                    if (item.IsLessThan(currentNodeItem))
-                    {
-                        this.LinkedList.AddBefore(this.LinkedList.Find(currentNodeItem), item);
-                        break;
-                    }
                 }
+
+                this.LinkedList.AddLast(item);
             }
 
             return default(T);
         }
 
-        public T Find(T obj)
+        public bool Exists(T obj, Func<T,T, bool> areEqual)
         {
-            return this.LinkedList.Find(obj).Value;
+            if (this.LinkedList == null)
+            {
+                return false;
+            }
+
+            foreach (var item in this.LinkedList)
+            {
+                if (areEqual(item, obj))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public T Find(T obj, Func<T, T, bool> areEqual)
+        {
+            if (this.LinkedList == null)
+            {
+                return default(T);
+            }
+
+            foreach (var item in this.LinkedList)
+            {
+                if (areEqual(item, obj))
+                {
+                    return item;
+                }
+            }
+
+            return default(T);
         }
 
         public IEnumerator GetEnumerator()

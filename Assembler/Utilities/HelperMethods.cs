@@ -5,7 +5,7 @@ using System.IO;
 namespace SIC.Assembler.Utilities
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public static class HelperMethods
     {
@@ -24,21 +24,24 @@ namespace SIC.Assembler.Utilities
                 throw new ArgumentException("Must provide a non-null OR empty file path");
             }
 
-            using (StreamReader symbolFile = File.OpenText(filePath))
+            if (File.Exists(filePath))
             {
-                string line;
-                while ((line = symbolFile.ReadLine()) != null)
+                using (StreamReader symbolFile = File.OpenText(filePath))
                 {
-                    if (string.IsNullOrWhiteSpace(line))
+                    string line;
+                    while ((line = symbolFile.ReadLine()) != null)
                     {
-                        if (ignoreBlankLines == false)
+                        if (string.IsNullOrWhiteSpace(line))
+                        {
+                            if (ignoreBlankLines == false)
+                            {
+                                lines.Add(line);
+                            }
+                        }
+                        else
                         {
                             lines.Add(line);
                         }
-                    }
-                    else
-                    {
-                        lines.Add(line);
                     }
                 }
             }
@@ -59,7 +62,7 @@ namespace SIC.Assembler.Utilities
         /// <summary>
         /// Throws the null or white space string exception.
         /// </summary>
-        /// <param name="argName">Name of the argument.</param>
+        /// <param name="argName">Expression of the argument.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
         public static void ThrowNullOrWhiteSpaceStringException(string argName)
         {

@@ -21,36 +21,19 @@ namespace SIC.Assembler
             var symbolTable = new SymbolTable();
             var codeLines = HelperMethods.GetAllNonEmptyLines("symbols.dat");
             var symbolLabels = HelperMethods.GetAllNonEmptyLines("test.dat");
+            var expressions = HelperMethods.GetAllNonEmptyLines("expr.dat");
 
-            Prompt("Start building symbol tree.", ENTER_TO_PROCEED);
+            Prompt("Start building Symbol Table.", ENTER_TO_PROCEED);
             symbolTable.BuildSymbolTable(codeLines, PrintWithTabPrefix, PrintFancyError);
 
-            Prompt("\n\nPerform lookup on the symbol tree.", ENTER_TO_PROCEED);
-            symbolTable.PerformLookupOnSymbolTree( symbolLabels, PrintWithTabPrefix, PrintFancyError);
-
-            IList<string> input = new List<string>
-            {
-                "one",
-                "two+74",
-                "@three",
-                "#five",
-                "six, x",
-                "#9",
-                "=x'03'",
-                "=c'ABC'",
-                "FOUR + 4",
-                "=X'03'",
-                "@one",
-                "8",
-                "=x'03'",
-                "=c'03'",
-                "",
-            };
-            OperandEvaluator.ParseOperands(input, symbolTable);
-
-
-            Prompt("\n\nPrint tree in order.", ENTER_TO_PROCEED);
+            Prompt("\n\nPrint Tree[In Order].", ENTER_TO_PROCEED);
             symbolTable.Print(TraverseOrder.InOrder, PrintWithTabPrefix);
+
+            Prompt("\n\nProcess Expressions.", ENTER_TO_PROCEED);
+            var literalTable = OperandEvaluator.ParseExpressions(expressions, symbolTable, PrintWithTabPrefix);
+
+            Prompt("\n\nPrint Literal Table.", ENTER_TO_PROCEED);
+            PrintWithTabPrefix(literalTable);
 
             Prompt("\n\n", "Press Enter to terminate...");
         }

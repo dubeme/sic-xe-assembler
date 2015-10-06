@@ -12,13 +12,27 @@ namespace SIC.Assembler.Model
     /// <summary>
     ///
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public class Literal : IComparable
     {
-        public const string FormatString = "{0, -20}{1, -20}{2, -20}{3, -20}";
+        /// <summary>
+        /// The format string
+        /// </summary>
+        public const string FormatString = "{0, -24}{1, 24}{2, 10}{3, 10}";
+
+        /// <summary>
+        /// The print maximum length
+        /// </summary>
+        public const int PrintMaxLength = 68;
+
+        /// <summary>
+        /// The litera l_ number
+        /// </summary>
         private const string LITERAL_NUMBER = "=x";
+
+        /// <summary>
+        /// The litera l_ string
+        /// </summary>
         private const string LITERAL_STRING = "=c";
-        private const int PrintMaxLength = 80;
 
         /// <summary>
         /// Gets or sets the address of this Literal{T}.
@@ -28,15 +42,24 @@ namespace SIC.Assembler.Model
         /// <summary>
         /// Gets or sets the length of the byte.
         /// </summary>
+        /// <value>
+        /// The length of the byte.
+        /// </value>
         public int ByteLength { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of this Literal{T}.
+        /// Gets or sets the expression of this Literal{T}.
         /// </summary>
-        public string Name { get; set; }
+        public string Expression { get; set; }
 
+        /// <summary>
+        /// Gets or sets the type of this Literal.
+        /// </summary>
         public LiteralType Type { get; set; }
 
+        /// <summary>
+        /// Gets the values.
+        /// </summary>
         public int[] Values { get; private set; }
 
         /// <summary>
@@ -70,20 +93,11 @@ namespace SIC.Assembler.Model
             }
         }
 
-        public static string HeaderText()
-        {
-            StringBuilder str = new StringBuilder();
-            str.AppendFormat(FormatString, "Name", "Value", "Length", "Address");
-            str.AppendLine();
-
-            for (int i = 0; i < PrintMaxLength; i++)
-            {
-                str.Append("-");
-            }
-
-            return str.ToString();
-        }
-
+        /// <summary>
+        /// Parses the specified literal string.
+        /// </summary>
+        /// <param name="literalString">The literal string.</param>
+        /// <returns></returns>
         public static Literal Parse(string literalString)
         {
             if (string.IsNullOrWhiteSpace(literalString))
@@ -93,7 +107,7 @@ namespace SIC.Assembler.Model
 
             var address = int.MinValue;
             var type = LiteralType.Unknown;
-            var name = literalString;
+            var expression = literalString;
 
             var values = new List<int>();
             if (literalString.StartsWith(LITERAL_STRING))
@@ -114,7 +128,7 @@ namespace SIC.Assembler.Model
             }
             return new Literal
             {
-                Name = name,
+                Expression = expression,
                 Type = type,
                 Address = address,
                 ByteLength = values.Count,
@@ -122,17 +136,34 @@ namespace SIC.Assembler.Model
             };
         }
 
+        /// <summary>
+        /// Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns></returns>
         public int CompareTo(object obj)
         {
             var literal = (Literal)obj;
             return this.ValueStr.CompareTo(literal.ValueStr);
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
-            return string.Format(FormatString, this.Name, this.ValueStr, this.ByteLength, this.Address);
+            return string.Format(FormatString, this.Expression, this.ValueStr, this.ByteLength, this.Address);
         }
 
+        /// <summary>
+        /// Chunkifies the specified string.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <param name="chunkSize">Size of the chunk.</param>
+        /// <returns></returns>
         private static IEnumerable<string> Chunkify(string str, int chunkSize)
         {
             return Enumerable.Range(0, str.Length / chunkSize)

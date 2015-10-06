@@ -14,22 +14,22 @@ namespace SIC.Assembler.Providers
         private static string LITERAL_NUMBER_TOKEN = "=x";
         private static string LITERAL_STRING_TOKEN = "=c";
 
-        public static void ParseOperands(IList<string> operandStrings, SymbolTable symbolTable)
+        public static LiteralTable ParseExpressions(IList<string> expressions, SymbolTable symbolTable, Action<object> printFunction)
         {
-            if (operandStrings == null || symbolTable == null)
+            if (expressions == null || symbolTable == null)
             {
-                return;
+                return null;
             }
 
             var literalTable = new LiteralTable();
-            Console.WriteLine(Operand.HeaderText());
-            foreach (var operandString in operandStrings.Where(str => !string.IsNullOrWhiteSpace(str)))
+
+            printFunction(Operand.HeaderText());
+            foreach (var operandString in expressions.Where(str => !string.IsNullOrWhiteSpace(str)))
             {
-                Console.WriteLine(CreateOperand(operandString.ToLower(), symbolTable, literalTable ));
+                printFunction(CreateOperand(operandString.ToLower(), symbolTable, literalTable ));
             }
 
-            Console.WriteLine();
-            Console.WriteLine(literalTable);
+            return literalTable;
         }
 
         private static Operand CreateOperand(string expression, SymbolTable symbolTable, LiteralTable literalTable)
