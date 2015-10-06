@@ -42,14 +42,12 @@ namespace SIC.Assembler.Providers
             switch (operandType)
             {
                 case OperandType.Simple:
-                    numericValue = GetValue(_expression, symbolTable);
-                    isRelocatable = true;
+                    numericValue = GetValue(_expression, symbolTable, out isRelocatable);
                     break;
 
                 case OperandType.Immediate:
                     // Todo: Why not relocatable, If label can shift.
-                    numericValue = GetValue(_expression, symbolTable);
-                    isRelocatable = false;
+                    numericValue = GetValue(_expression, symbolTable, out isRelocatable);
                     break;
 
                 case OperandType.ArithmeticExpression:
@@ -61,11 +59,13 @@ namespace SIC.Assembler.Providers
                         throw new Exception(string.Format("{0} is invalid. Expecting [operand operator operand]", _expression));
                     }
 
-                    var operand1 = GetValue(operation[0], symbolTable);
-                    var operand2 = GetValue(operation[1], symbolTable);
+                    var operand1Relocatable = false;
+                    var operand2Relocatable = false;
+                    var operand1 = GetValue(operation[0], symbolTable, out operand1Relocatable);
+                    var operand2 = GetValue(operation[1], symbolTable, out operand2Relocatable);
 
                     numericValue = operand1 + operand2 * (_expression.Contains("+") ? 1 : -1);
-                    isRelocatable = true;
+                    isRelocatable = operand1Relocatable || operand2Relocatable;
 
                     break;
 
@@ -76,13 +76,11 @@ namespace SIC.Assembler.Providers
                     {
                         throw new Exception(string.Format("{0} is invalid. Expecting [operand, operand]", _expression));
                     }
-                    numericValue = GetValue(operation[0], symbolTable);
-                    isRelocatable = true;
+                    numericValue = GetValue(operation[0], symbolTable, out isRelocatable);
                     break;
 
                 case OperandType.Indirect:
-                    numericValue = GetValue(_expression, symbolTable);
-                    isRelocatable = true;
+                    numericValue = GetValue(_expression, symbolTable, out isRelocatable);
                     break;
 
                 case OperandType.LiteralString:
@@ -135,12 +133,14 @@ namespace SIC.Assembler.Providers
             return OperandType.Simple;
         }
 
-        private static int GetValue(string label, SymbolTable symbolTable)
+        private static int GetValue(string label, SymbolTable symbolTable, out bool isRelocatable)
         {
             const string TRIM_CHARS = " @#";
             var trimmedLabel = label.Trim(TRIM_CHARS.ToCharArray());
             var symbol = symbolTable.FindSymbol(trimmedLabel);
             int num;
+
+            isRelocatable = false;
 
             if (int.TryParse(trimmedLabel, out num))
             {
@@ -148,6 +148,7 @@ namespace SIC.Assembler.Providers
             }
             if (symbol != null)
             {
+                isRelocatable = symbol.RFlag;
                 return symbol.Value;
             }
 
