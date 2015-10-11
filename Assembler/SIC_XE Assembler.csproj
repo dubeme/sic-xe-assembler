@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\CodeLine.cs" />
     <Compile Include="Model\Instruction.cs" />
     <Compile Include="Model\InstructionFormat.cs" />
     <Compile Include="Model\Literal.cs" />

@@ -226,11 +226,12 @@ namespace SIC.Assembler.Model
         /// <returns></returns>
         public int CompareTo(object obj)
         {
-            if (obj is string)
+            if (obj is string )
             {
                 // This is the scenario where we
                 // compare a Symbol object to a string(Symbol label)
-                return this.Label.CompareTo(obj);
+                var symbolLabel = obj.ToString();
+                return this.Label.CompareTo(Symbol.ParseSymbolLabel(symbolLabel));
             }
 
             var other = (Symbol)obj;

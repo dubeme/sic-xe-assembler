@@ -83,7 +83,7 @@ namespace SIC.Assembler.Providers
                 {
                     try
                     {
-                        var symbol = this._SymbolTable.FindValue(Symbol.ParseSymbolLabel(symbolLabel));
+                        var symbol = this._SymbolTable.FindValue(symbolLabel);
 
                         if (symbol != null)
                         {

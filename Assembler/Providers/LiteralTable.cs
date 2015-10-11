@@ -22,14 +22,8 @@ namespace SIC.Assembler.Providers
         /// The literals
         /// </summary>
         private NonDuplicateLinkedList<Literal> Literals = new NonDuplicateLinkedList<Literal>();
-
-        /// <summary>
-        /// Adds the literal.
-        /// </summary>
-        /// <param name="literalExpression">The literal expression.</param>
-        /// <param name="addToTable">if set to <c>true</c> [add to table].</param>
-        /// <returns></returns>
-        public Literal AddLiteral(string literalExpression, bool addToTable = true)
+        
+        public Literal ParseLiteral(string literalExpression, bool addToTable = true)
         {
             var literal = Literal.Parse(literalExpression);
 

@@ -14,7 +14,7 @@ namespace SIC.Assembler.Providers
         private static string LITERAL_NUMBER_TOKEN = "=x";
         private static string LITERAL_STRING_TOKEN = "=c";
 
-        public static LiteralTable ParseExpressions(IList<string> expressions, SymbolTable symbolTable, Action<object> printFunction)
+        public static LiteralTable ParseExpressions(IList<string> expressions, SymbolTable symbolTable, Action<object> printFunction, Action<object> errorFunction)
         {
             if (expressions == null || symbolTable == null)
             {
@@ -26,7 +26,14 @@ namespace SIC.Assembler.Providers
             printFunction(Operand.HeaderText());
             foreach (var operandString in expressions.Where(str => !string.IsNullOrWhiteSpace(str)))
             {
-                printFunction(CreateOperand(operandString.ToLower(), symbolTable, literalTable ));
+                try
+                {
+                    printFunction(Operand.Parse(operandString.ToLower(), 0, symbolTable, literalTable));
+                }
+                catch (Exception ex)
+                {
+                    errorFunction(string.Format("Input = {0}\n{1}", operandString, ex.Message));
+                }
             }
 
             return literalTable;
@@ -84,12 +91,12 @@ namespace SIC.Assembler.Providers
                     break;
 
                 case OperandType.LiteralString:
-                    numericValue = literalTable.AddLiteral(_expression).Address;
+                    numericValue = literalTable.ParseLiteral(_expression).Address;
                     isRelocatable = true;
                     break;
 
                 case OperandType.LiteralNumber:
-                    numericValue = literalTable.AddLiteral(_expression).Address;
+                    numericValue = literalTable.ParseLiteral(_expression).Address;
                     isRelocatable = true;
                     break;
             }
@@ -137,7 +144,6 @@ namespace SIC.Assembler.Providers
         {
             const string TRIM_CHARS = " @#";
             var trimmedLabel = label.Trim(TRIM_CHARS.ToCharArray());
-            var symbol = symbolTable.FindSymbol(trimmedLabel);
             int num;
 
             isRelocatable = false;
@@ -146,11 +152,15 @@ namespace SIC.Assembler.Providers
             {
                 return num;
             }
+
+            var symbol = symbolTable.FindSymbol(trimmedLabel);
             if (symbol != null)
             {
                 isRelocatable = symbol.RFlag;
                 return symbol.Value;
             }
+
+
 
             throw SymbolNotFound(trimmedLabel);
         }

@@ -30,7 +30,7 @@ namespace SIC.Assembler
             symbolTable.Print(TraverseOrder.InOrder, PrintWithTabPrefix);
 
             Prompt("\n\nProcess Expressions.", ENTER_TO_PROCEED);
-            var literalTable = OperandEvaluator.ParseExpressions(expressions, symbolTable, PrintWithTabPrefix);
+            var literalTable = OperandEvaluator.ParseExpressions(expressions, symbolTable, PrintWithTabPrefix, PrintFancyError);
 
             Prompt("\n\nPrint Literal Table.", ENTER_TO_PROCEED);
             PrintWithTabPrefix(literalTable);
