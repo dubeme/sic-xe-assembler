@@ -2,12 +2,11 @@
 using SIC.Assembler.Utilities;
 using SIC.Assembler.Utilities.Model;
 using System;
-using System.Collections.Generic;
 
 namespace SIC.Assembler
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     internal class Program
     {

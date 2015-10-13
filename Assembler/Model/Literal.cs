@@ -17,12 +17,12 @@ namespace SIC.Assembler.Model
         /// <summary>
         /// The format string
         /// </summary>
-        public const string FormatString = "{0, -24}{1, 24}{2, 10}{3, 10}";
+        public const string FormatString = "{0, -24}{1, 24}{2, 10}{3, 16}";
 
         /// <summary>
         /// The print maximum length
         /// </summary>
-        public const int PrintMaxLength = 68;
+        public const int PrintMaxLength = 74;
 
         /// <summary>
         /// The litera l_ number
@@ -77,7 +77,7 @@ namespace SIC.Assembler.Model
                     {
                         foreach (var value in this.Values)
                         {
-                            str.Append(value.ToString("X"));
+                            str.Append(value.ToString("X2"));
                         }
                     }
                     else
@@ -122,6 +122,13 @@ namespace SIC.Assembler.Model
             {
                 type = LiteralType.Number;
                 literalString = literalString.Replace(LITERAL_NUMBER, "").Replace("'", "");
+
+                if (literalString.Length%2 == 1)
+                {
+                    // If odd # of characters
+                    literalString = "0" + literalString;
+                }
+
                 values = Chunkify(literalString, 2)
                     .Select(str => int.Parse(str, NumberStyles.HexNumber))
                     .ToList();
