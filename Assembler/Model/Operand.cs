@@ -217,7 +217,7 @@ namespace SIC.Assembler.Model
 
         private static Symbol GetSymbol(string symbolExpression, SymbolTable symbolTable, string trimChars = "")
         {
-            var symbol = symbolTable.FindSymbol(symbolExpression.Trim(trimChars.ToCharArray()));
+            var symbol = symbolTable[symbolExpression.Trim(trimChars.ToCharArray())];
             if (symbol != null)
             {
                 return symbol;

@@ -15,6 +15,40 @@ namespace SIC.Assembler.Providers
         /// </summary>
         private BinarySearchTree<Symbol> _SymbolTable;
 
+        public Symbol this[string label]
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(label))
+                {
+                    return null;
+                }
+
+                label = Symbol.ParseSymbolLabel(label).ToLower();
+                return this._SymbolTable.FindValue(label);
+            }
+        }
+
+        public void AddSymbol(string label, int value, bool isRelocatable, bool allowDuplicates = true)
+        {
+            if (!allowDuplicates && this.ContainsSymbol(label))
+            {
+                throw new Exception(string.Format("Symbol {{{0}}} already exists.", label));
+            }
+
+            var symbol = new Symbol
+            {
+                Label = label,
+                RFlag = isRelocatable,
+                Value = value
+            };
+
+            this._SymbolTable.Insert(symbol, (Symbol sym) =>
+            {
+                sym.MFlag = true;
+            });
+        }
+
         /// <summary>
         /// Builds the symbol table.
         /// </summary>
@@ -55,15 +89,9 @@ namespace SIC.Assembler.Providers
             }
         }
 
-        public Symbol FindSymbol(string label)
+        public bool ContainsSymbol(string label)
         {
-            // Symbol.ParseSymbolLabel(label)
-            if (string.IsNullOrWhiteSpace(label))
-            {
-                return null;
-            }
-
-            return this._SymbolTable.FindValue(label.ToLower());
+            return this[label] != null;
         }
 
         /// <summary>

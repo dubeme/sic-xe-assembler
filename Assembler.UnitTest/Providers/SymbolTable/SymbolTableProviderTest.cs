@@ -15,7 +15,7 @@ namespace Assembler.UnitTest.Providers.SymbolTable
             var codeLines = HelperMethods.GetAllNonEmptyLines("symbol.txt");
             symbolTable.BuildSymbolTable(codeLines);
 
-            Assert.IsTrue(symbolTable.FindSymbol("Balling").MFlag, "M Flag should be set");
+            Assert.IsTrue(symbolTable["Balling"].MFlag, "M Flag should be set");
         }
 
         [TestMethod]
