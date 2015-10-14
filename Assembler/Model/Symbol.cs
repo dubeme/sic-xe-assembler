@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace SIC.Assembler.Model
 {
     /// <summary>
-    ///
+    /// 
     /// </summary>
     public class Symbol : IComparable
     {
@@ -34,14 +34,59 @@ namespace SIC.Assembler.Model
         /// </summary>
         public const string VALUE_PATTERN = "^(\\+|-)?\\d+$";
 
+        /// <summary>
+        /// The labe l_ ma x_ length
+        /// </summary>
         private const int LABEL_MAX_LENGTH = 21;
+        /// <summary>
+        /// The labe l_ mi n_ length
+        /// </summary>
         private const int LABEL_MIN_LENGTH = 1;
+        /// <summary>
+        /// The labe l_ tri m_ length
+        /// </summary>
         private const int LABEL_TRIM_LENGTH = 21;
+        /// <summary>
+        /// The _label
+        /// </summary>
+        private string _label;
+        /// <summary>
+        /// The _long label
+        /// </summary>
+        private string _longLabel;
 
         /// <summary>
         /// Gets or sets the label of this Symbol.
         /// </summary>
-        public string Label { get; set; }
+        public string Label
+        {
+            get
+            {
+                this._label = this._label ?? Symbol.ParseSymbolLabel(this._longLabel);
+                return this._label;
+            }
+            set
+            {
+                this._label = Symbol.ParseSymbolLabel(value);
+                this.LongLabel = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the long label of this Symbol.
+        /// </summary>
+        public string LongLabel
+        {
+            get
+            {
+                this._longLabel = this._longLabel ?? this._label; 
+                return this._longLabel;
+            }
+            set
+            {
+                this._longLabel = Symbol.ParseSymbolLabel(value, false);
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance has multiple.
@@ -92,7 +137,8 @@ namespace SIC.Assembler.Model
             {
                 Value = ParseSymbolValue(tokens[0]),
                 Label = ParseSymbolLabel(tokens[1]),
-                RFlag = ParseSymbolRFlag(tokens[2])
+                RFlag = ParseSymbolRFlag(tokens[2]),
+                LongLabel = ParseSymbolLabel(tokens[1], false)
             };
         }
 
@@ -100,11 +146,12 @@ namespace SIC.Assembler.Model
         /// Parses the symbol label.
         /// </summary>
         /// <param name="label">The label.</param>
+        /// <param name="shorten">if set to <c>true</c> [shorten].</param>
         /// <returns></returns>
         /// <exception cref="System.Exception">
         /// </exception>
         /// <exception cref="System.ArgumentException"></exception>
-        public static string ParseSymbolLabel(string label)
+        public static string ParseSymbolLabel(string label, bool shorten = true)
         {
             string reason = "";
             string expected = "";
@@ -135,7 +182,12 @@ namespace SIC.Assembler.Model
                     throw new Exception();
                 }
 
-                return label.Length > LABEL_TRIM_LENGTH ? label.Substring(0, LABEL_TRIM_LENGTH) : label;
+                if (shorten)
+                {
+                    return label.Length > LABEL_TRIM_LENGTH ? label.Substring(0, LABEL_TRIM_LENGTH) : label;
+                }
+
+                return label;
             }
             catch (Exception)
             {
@@ -226,7 +278,7 @@ namespace SIC.Assembler.Model
         /// <returns></returns>
         public int CompareTo(object obj)
         {
-            if (obj is string )
+            if (obj is string)
             {
                 // This is the scenario where we
                 // compare a Symbol object to a string(Symbol label)
