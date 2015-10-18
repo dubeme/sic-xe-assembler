@@ -29,7 +29,7 @@ namespace SIC.Assembler.Providers
             }
         }
 
-        public void AddSymbol(string label, int value, bool isRelocatable, bool allowDuplicates = true)
+        public Symbol AddSymbol(string label, int value, bool isRelocatable, bool allowDuplicates = true)
         {
             if (!allowDuplicates && this.ContainsSymbol(label))
             {
@@ -47,6 +47,8 @@ namespace SIC.Assembler.Providers
             {
                 sym.MFlag = true;
             });
+
+            return symbol;
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace SIC.Assembler.Providers
                 try
                 {
                     var duplicateSymbol = false;
-                    var symbol = Symbol.Parse(codeLine);
+                    var symbol = Symbol.ParseCompact(codeLine);
                     this._SymbolTable.Insert(symbol, (Symbol sym) =>
                     {
                         sym.MFlag = true;

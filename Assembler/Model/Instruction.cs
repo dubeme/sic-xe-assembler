@@ -1,12 +1,38 @@
-﻿using System;
+﻿using SIC.Assembler.Utilities.Extensions;
+using System;
 using System.Collections.Generic;
 
 namespace SIC.Assembler.Model
 {
     public class Instruction
     {
+        private static readonly Dictionary<string, Instruction> AllInstructions = new Dictionary<string, Instruction>();
+
+        private static readonly string[] AssemblerDirectives = {
+            "START",
+            "END",
+            "BYTE",
+            "WORD",
+            "RESB",
+            "RESW",
+            "BASE",
+            "EQU",
+            "EXTDEF",
+            "EXTREF"
+        };
+
         private static Instructions _ALL = null;
-        private static Dictionary<string, Instruction> AllInstructions = new Dictionary<string, Instruction>();
+
+        static Instruction()
+        {
+            AssemblerDirectives.ForEach(directive => AllInstructions.Add(directive, new Instruction
+            {
+                Format = InstructionFormat.None,
+                Mnemonic = directive,
+                OpCode = int.MinValue,
+                DirectiveType = (AssemblerDirectiveType)Enum.Parse(typeof(AssemblerDirectiveType), directive)
+            }));
+        }
 
         private Instruction()
         {
@@ -20,18 +46,41 @@ namespace SIC.Assembler.Model
             }
         }
 
+        public int ByteWeight
+        {
+            get
+            {
+                return (int)this.Format;
+            }
+        }
+
+        public AssemblerDirectiveType DirectiveType { get; set; }
+
         public InstructionFormat Format { get; set; }
+
+        public bool IsAssemblerDirective
+        {
+            get
+            {
+                return this.DirectiveType != AssemblerDirectiveType.Unknown;
+            }
+        }
 
         public string Mnemonic { get; set; }
 
         public int OpCode { get; set; }
 
-        private static void RegisterInstruction(string mnemonic, int opcode, byte format)
+        public static Instruction Parse(string instruction)
+        {
+            return All[instruction];
+        }
+
+        public static void RegisterInstruction(string mnemonic, string hexOpCode, byte format)
         {
             AllInstructions.Add(mnemonic, new Instruction
             {
                 Mnemonic = mnemonic,
-                OpCode = opcode,
+                OpCode = int.Parse(hexOpCode, System.Globalization.NumberStyles.HexNumber),
                 Format = (InstructionFormat)Enum.Parse(typeof(InstructionFormat), format.ToString())
             });
         }
@@ -47,6 +96,7 @@ namespace SIC.Assembler.Model
                         return null;
                     }
 
+                    instructionStr = instructionStr.ToLower();
                     var isFormat4 = instructionStr.StartsWith("+");
                     var instruction = AllInstructions[instructionStr.TrimStart('+')];
 

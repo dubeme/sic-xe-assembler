@@ -10,12 +10,12 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         [TestMethod]
         public void Parse()
         {
-            var symbol1 = Symbol.Parse("          12 label736743 False");
-            var symbol2 = Symbol.Parse("            65        label736743 F             ");
-            var symbol3 = Symbol.Parse("+99 label736743 f");
-            var symbol4 = Symbol.Parse("-00 label736743 FalSE");
-            var symbol5 = Symbol.Parse("09 label736743 0");
-            var symbol6 = Symbol.Parse("09 label736743 1");
+            var symbol1 = Symbol.ParseCompact("          12 label736743 False");
+            var symbol2 = Symbol.ParseCompact("            65        label736743 F             ");
+            var symbol3 = Symbol.ParseCompact("+99 label736743 f");
+            var symbol4 = Symbol.ParseCompact("-00 label736743 FalSE");
+            var symbol5 = Symbol.ParseCompact("09 label736743 0");
+            var symbol6 = Symbol.ParseCompact("09 label736743 1");
 
             Assert.AreEqual(symbol1.RFlag, false, "RFlag shouldn't be set");
             Assert.AreEqual(symbol2.RFlag, false, "RFlag shouldn't be set");
@@ -30,35 +30,35 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         [ExpectedException(typeof(ArgumentException))]
         public void Parse_EmptyString()
         {
-            Symbol.Parse(string.Empty);
+            Symbol.ParseCompact(string.Empty);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Parse_EmptyStringQuoted()
         {
-            Symbol.Parse("");
+            Symbol.ParseCompact("");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Parse_IncorrectNumberOfTokens()
         {
-            Symbol.Parse("Token1 Token2 Token3 Token4");
+            Symbol.ParseCompact("Token1 Token2 Token3 Token4");
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Parse_null()
         {
-            Symbol.Parse(null);
+            Symbol.ParseCompact(null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Parse_WhiteSpaces()
         {
-            Symbol.Parse("    ");
+            Symbol.ParseCompact("    ");
         }
 
         [TestMethod]

@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\AssemblerDirectiveType.cs" />
     <Compile Include="Model\CodeLine.cs" />
     <Compile Include="Model\Instruction.cs" />
     <Compile Include="Model\InstructionFormat.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Providers\LiteralTable.cs" />
     <Compile Include="Providers\OperandEvaluator.cs" />
     <Compile Include="Providers\SymbolTable.cs" />
+    <Compile Include="Utilities\Extensions\Collections.cs" />
     <Compile Include="Utilities\Model\BSTNode.cs" />
     <Compile Include="Utilities\Model\TraverseOrder.cs" />
     <Compile Include="Utilities\Collections\BinarySearchTree.cs" />

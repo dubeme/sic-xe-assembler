@@ -117,7 +117,7 @@ namespace SIC.Assembler.Model
         /// or The wrong value is provided for the Value
         /// or The wrong value is provided for the Symbol label
         /// or The wrong value is provided for the R Flag</exception>
-        public static Symbol Parse(string codeLine)
+        public static Symbol ParseCompact(string codeLine)
         {
             if (string.IsNullOrWhiteSpace(codeLine))
             {
@@ -139,6 +139,17 @@ namespace SIC.Assembler.Model
                 Label = ParseSymbolLabel(tokens[1]),
                 RFlag = ParseSymbolRFlag(tokens[2]),
                 LongLabel = ParseSymbolLabel(tokens[1], false)
+            };
+        }
+
+        public static Symbol Parse(string label, int value, bool isRelocatable)
+        {
+            return new Symbol
+            {
+                Value = value,
+                Label = ParseSymbolLabel(label),
+                RFlag = isRelocatable,
+                LongLabel = ParseSymbolLabel(label, false)
             };
         }
 
@@ -261,7 +272,7 @@ namespace SIC.Assembler.Model
             symbol = null;
             try
             {
-                symbol = Parse(str);
+                symbol = ParseCompact(str);
             }
             catch (Exception ex)
             {
@@ -331,5 +342,7 @@ namespace SIC.Assembler.Model
 
             return errMsg.ToString();
         }
+
+
     }
 }

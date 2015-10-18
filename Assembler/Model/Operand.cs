@@ -19,6 +19,10 @@ namespace SIC.Assembler.Model
         // NIXBPE
         public string Expression { get; set; }
 
+        public int ByteSize { get; set; }
+
+        public byte[] Bytes { get; private set; }
+
         public int NumericValue { get; set; }
         public bool Relocatable { get; set; }
         public OperandType Type { get; set; }
@@ -59,7 +63,7 @@ namespace SIC.Assembler.Model
         public static Operand ParseArithmeticExpression(string expression, SymbolTable symbolTable, LiteralTable literalTable)
         {
             // Todo: Validate expression syntax
-            // Asuming plain Symbol and Numbers [No funny shit like @#]
+            // Assuming plain Symbol and Numbers [No funny shit like @#]
 
             var operation = expression.Replace("\\s+", "").Split(EXPRESSION_OPERATORS.ToArray());
 
@@ -159,6 +163,11 @@ namespace SIC.Assembler.Model
                 Type = OperandType.LiteralString,
                 Relocatable = false
             };
+        }
+
+        public static Operand Parse(string expression)
+        {
+            throw new NotImplementedException();
         }
 
         public static Operand ParseSimple(string expression, SymbolTable symbolTable)

@@ -1,7 +1,7 @@
 ﻿namespace SIC.Assembler.Model
 {
     /// <summary>
-    ///
+    /// 
     /// </summary>
     public enum InstructionFormat
     {
@@ -28,6 +28,11 @@
         /// <summary>
         /// Instruction format 4
         /// </summary>
-        Four = 4
+        Four = 4,
+
+        /// <summary>
+        /// Typically for Assembler directives
+        /// </summary>
+        None = 5
     }
 }

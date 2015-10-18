@@ -10,7 +10,7 @@ using System.Text;
 namespace SIC.Assembler.Model
 {
     /// <summary>
-    ///
+    /// 
     /// </summary>
     public class Literal : IComparable
     {
@@ -27,12 +27,12 @@ namespace SIC.Assembler.Model
         /// <summary>
         /// The litera l_ number
         /// </summary>
-        private const string LITERAL_NUMBER = "=x";
+        private const char LITERAL_NUMBER = 'x';
 
         /// <summary>
         /// The litera l_ string
         /// </summary>
-        private const string LITERAL_STRING = "=c";
+        private const char LITERAL_STRING = 'c';
 
         /// <summary>
         /// Gets or sets the address of this Literal{T}.
@@ -45,7 +45,13 @@ namespace SIC.Assembler.Model
         /// <value>
         /// The length of the byte.
         /// </value>
-        public int ByteLength { get; set; }
+        public int ByteLength
+        {
+            get
+            {
+                return this.Values.Length;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the expression of this Literal{T}.
@@ -102,45 +108,57 @@ namespace SIC.Assembler.Model
         {
             if (string.IsNullOrWhiteSpace(literalString))
             {
-                return null;
+                throw new ArgumentNullException("Literal expression can't be null OR empty.", literalString);
             }
 
-            var address = int.MinValue;
-            var type = LiteralType.Unknown;
-            var expression = literalString;
-
-            var values = new List<int>();
-            if (literalString.StartsWith(LITERAL_STRING))
-            {
-                type = LiteralType.String;
-                literalString = literalString.Replace(LITERAL_STRING, "").Replace("'", "");
-                values = Chunkify(literalString, 1)
-                    .Select(str => (int)str[0])
-                    .ToList();
-            }
-            else if (literalString.StartsWith(LITERAL_NUMBER))
-            {
-                type = LiteralType.Number;
-                literalString = literalString.Replace(LITERAL_NUMBER, "").Replace("'", "");
-
-                if (literalString.Length%2 == 1)
-                {
-                    // If odd # of characters
-                    literalString = "0" + literalString;
-                }
-
-                values = Chunkify(literalString, 2)
-                    .Select(str => int.Parse(str, NumberStyles.HexNumber))
-                    .ToList();
-            }
             return new Literal
             {
-                Expression = expression,
-                Type = type,
-                Address = address,
-                ByteLength = values.Count,
-                Values = values.ToArray()
+                Expression = literalString,
+                Type = GetLiteralType(literalString, blowUpIfUnknown: true),
+                Address = int.MinValue,
+                Values = ParseValue(literalString.Trim()).ToArray()
             };
+        }
+
+        /// <summary>
+        /// Parses the value.
+        /// </summary>
+        /// <param name="valStr">The value string.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Can't be null or whitespace</exception>
+        public static IEnumerable<int> ParseValue(string valStr)
+        {
+            if (string.IsNullOrWhiteSpace(valStr))
+            {
+                throw new ArgumentException("Can't be null or whitespace", valStr);
+            }
+
+            var chunkSize = 0;
+            var type = GetLiteralType(valStr, blowUpIfUnknown: true);
+            Func<string, int> transformer = null;
+
+            valStr = valStr.TrimStart('=');
+
+            if (type == LiteralType.String)
+            {
+                chunkSize = 1;
+                transformer = (str) => str[0];
+                valStr = valStr.TrimStart(LITERAL_STRING).Trim('\'', '"');
+            }
+            else if (type == LiteralType.Number)
+            {
+                chunkSize = 2;
+                transformer = (str) => int.Parse(str, NumberStyles.HexNumber);
+                valStr = valStr.TrimStart(LITERAL_NUMBER).Trim('\'', '"');
+
+                if (valStr.Length % 2 == 1)
+                {
+                    // If odd # of characters
+                    valStr = "0" + valStr;
+                }
+            }
+
+            return Chunkify(valStr, chunkSize).Select(transformer);
         }
 
         /// <summary>
@@ -175,6 +193,32 @@ namespace SIC.Assembler.Model
         {
             return Enumerable.Range(0, str.Length / chunkSize)
                 .Select(i => str.Substring(i * chunkSize, chunkSize));
+        }
+
+        /// <summary>
+        /// Gets the type of the literal.
+        /// </summary>
+        /// <param name="literalString">The literal string.</param>
+        /// <returns></returns>
+        private static LiteralType GetLiteralType(string literalString, bool blowUpIfUnknown = false)
+        {
+            var expr = literalString.Trim().TrimStart('=');
+
+            if (expr.StartsWith(LITERAL_STRING.ToString(), StringComparison.CurrentCultureIgnoreCase))
+            {
+                return LiteralType.String;
+            }
+            else if (expr.StartsWith(LITERAL_NUMBER.ToString(), StringComparison.CurrentCultureIgnoreCase))
+            {
+                return LiteralType.Number;
+            }
+
+            if (blowUpIfUnknown)
+            {
+                throw new ArgumentException("Unknown literal type.", literalString);
+            }
+
+            return LiteralType.Unknown;
         }
     }
 }
