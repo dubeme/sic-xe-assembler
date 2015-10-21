@@ -108,22 +108,24 @@ namespace SIC.Assembler.Model
             // Trim line
             return new CodeLine(); ;
         }
-
-        private static int AssignLiteralTableAddresses(LiteralTable literalTable, int programCounter)
+        
+        private static int AdvanceProgramCounter(int programCounter, Instruction instruction, Operand operand)
         {
-            return 0;
-        }
+            var displacement = 0;
 
-        private static int CalculateProgramCounter(Symbol symbol, Instruction instruction, Operand operand)
-        {
+            if (instruction == null)
+            {
+                return int.MinValue;
+            }
+
             switch (instruction.DirectiveType)
             {
-                case AssemblerDirectiveType.Start: return symbol.Value;
-                case AssemblerDirectiveType.End: return symbol.Value;
-                case AssemblerDirectiveType.Byte: return symbol.Value + operand.Bytes.Length;
-                case AssemblerDirectiveType.Word: return symbol.Value + WORD_SIZE;
-                case AssemblerDirectiveType.Resb: return symbol.Value + operand.NumericValue;
-                case AssemblerDirectiveType.Resw: return symbol.Value + operand.NumericValue * WORD_SIZE;
+                case AssemblerDirectiveType.Start: return programCounter;
+                case AssemblerDirectiveType.End: return programCounter;
+                case AssemblerDirectiveType.Byte: return programCounter + operand.ByteSize;
+                case AssemblerDirectiveType.Word: return programCounter + Math.Max(WORD_SIZE, (int)instruction.Format);
+                case AssemblerDirectiveType.Resb: return programCounter + Math.Max(operand.ByteSize, (int)instruction.Format);
+                case AssemblerDirectiveType.Resw: return programCounter + Math.Max(operand.ByteSize, (int)instruction.Format);
                 case AssemblerDirectiveType.Base:
                     break;
 
@@ -136,6 +138,9 @@ namespace SIC.Assembler.Model
                 case AssemblerDirectiveType.Extref:
                     break;
             }
+
+
+            return programCounter + displacement;// Math.Max(operand.ByteSize, (int)instruction.Format);
 
             return int.MinValue;
         }
@@ -172,7 +177,7 @@ namespace SIC.Assembler.Model
                 throw new Exception(string.Format("Can't determine instruction on line #{0}.", lineNumber));
             }
 
-            newPC = CalculateProgramCounter(symbol, instruction, operand);
+            newPC = AdvanceProgramCounter(currentPC, instruction, operand);
             return new CodeLine
             {
                 Address = currentPC,
