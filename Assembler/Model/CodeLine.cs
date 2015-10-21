@@ -1,6 +1,5 @@
 ﻿using SIC.Assembler.Providers;
 using System;
-using System.Linq;
 using System.Text;
 
 namespace SIC.Assembler.Model
@@ -141,63 +140,39 @@ namespace SIC.Assembler.Model
             return int.MinValue;
         }
 
-        private static CodeLine Parse1Token(string[] tokens, SymbolTable symbolTable, LiteralTable literalTable, int programCounter)
-        {
-            return null;
-        }
-
-        private static CodeLine Parse2Tokens(string[] tokens, SymbolTable symbolTable, LiteralTable literalTable, int programCounter)
-        {
-            return null;
-        }
-
-        private static CodeLine Parse3Tokens(string[] tokens, SymbolTable symbolTable, LiteralTable literalTable, int programCounter, int lineNumber)
-        {
-            var label = tokens[0];
-
-            if (symbolTable.ContainsSymbol(label))
-            {
-                throw new Exception(string.Format("Duplicate symbol \"{0}\" on line \"{1}\".", label, lineNumber));
-            }
-
-            var instruction = Instruction.Parse(tokens[1]);
-            var operand = Operand.Parse(tokens[2], programCounter, symbolTable, literalTable);
-
-            if (instruction != null)
-            {
-                programCounter += instruction.ByteWeight;
-            }
-
-            return null;
-        }
-
-        private static CodeLine ParseLine(string[] line, int lineNumber, SymbolTable symbolTable, LiteralTable literalTable, int currentPC, out int newPC)
+        private static CodeLine CreateCodeLine(string[] columns, SymbolTable symbolTable, LiteralTable literalTable, int lineNumber, int currentPC, out int newPC)
         {
             Symbol symbol = null;
-            Instruction instruction = Instruction.All[line[0]]; ;
             Operand operand = null;
+            Instruction instruction = Instruction.All[columns[0]];
 
+            // Todo: Check to see if labels can be reserved words
             if (instruction == null)
             {
-                instruction = Instruction.All[line[1]];
-                symbol = Symbol.Parse(line[0], currentPC, false);
+                instruction = Instruction.All[columns[1]];
 
-                if (line.Length > 2)
+                if (instruction == null)
                 {
-                    operand = Operand.Parse(line[2]);
+                    throw new Exception(string.Format("Can't determine instruction on line #{0}.", lineNumber));
                 }
-                newPC = CalculateProgramCounter(symbol, instruction, operand);
+                
+                symbol = symbolTable.AddSymbol(columns[0], currentPC, false);
+
+                if (columns.Length > 2)
+                {
+                    operand = Operand.CreateOperand(columns[2], currentPC, symbolTable, literalTable);
+                }
             }
-            else if (line.Length > 1)
+            else if (columns.Length > 1)
             {
-                operand = Operand.Parse(line[1]);
-                newPC = currentPC + (int)instruction.Format;
+                operand = Operand.CreateOperand(columns[1], currentPC, symbolTable, literalTable);
             }
             else
             {
                 throw new Exception(string.Format("Can't determine instruction on line #{0}.", lineNumber));
             }
 
+            newPC = CalculateProgramCounter(symbol, instruction, operand);
             return new CodeLine
             {
                 Address = currentPC,
@@ -206,20 +181,6 @@ namespace SIC.Assembler.Model
                 Operand = operand,
                 LineNumber = lineNumber,
             };
-        }
-
-        private static Symbol ParseSymbol(string label, Instruction instruction, SymbolTable symbolTable, int programCounter)
-        {
-            if (instruction != null)
-            {
-                return symbolTable.AddSymbol(
-                    label: label,
-                    value: programCounter,
-                    isRelocatable: true,
-                    allowDuplicates: false);
-            }
-
-            throw new Exception(string.Format("Invalid instruction"));
         }
     }
 }

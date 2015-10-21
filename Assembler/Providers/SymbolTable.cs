@@ -36,13 +36,7 @@ namespace SIC.Assembler.Providers
                 throw new Exception(string.Format("Symbol {{{0}}} already exists.", label));
             }
 
-            var symbol = new Symbol
-            {
-                Label = label,
-                RFlag = isRelocatable,
-                Value = value
-            };
-
+            var symbol = Symbol.CreateSymbol(label, value, isRelocatable);
             this._SymbolTable.Insert(symbol, (Symbol sym) =>
             {
                 sym.MFlag = true;
@@ -68,7 +62,7 @@ namespace SIC.Assembler.Providers
                 try
                 {
                     var duplicateSymbol = false;
-                    var symbol = Symbol.ParseCompact(codeLine);
+                    var symbol = Symbol.Parse(codeLine);
                     this._SymbolTable.Insert(symbol, (Symbol sym) =>
                     {
                         sym.MFlag = true;

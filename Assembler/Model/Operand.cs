@@ -41,7 +41,7 @@ namespace SIC.Assembler.Model
             return str.ToString();
         }
 
-        public static Operand Parse(string expression, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
+        public static Operand CreateOperand(string expression, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
         {
             var _expression = expression.Replace("\\s+", "");
             var operandType = GetOperandType(_expression);
@@ -60,7 +60,7 @@ namespace SIC.Assembler.Model
             throw new Exception("Invalid operand - " + expression);
         }
 
-        public static Operand ParseArithmeticExpression(string expression, SymbolTable symbolTable, LiteralTable literalTable)
+        private static Operand ParseArithmeticExpression(string expression, SymbolTable symbolTable, LiteralTable literalTable)
         {
             // Todo: Validate expression syntax
             // Assuming plain Symbol and Numbers [No funny shit like @#]
@@ -90,7 +90,7 @@ namespace SIC.Assembler.Model
             };
         }
 
-        public static Operand ParseImmediate(string expression, SymbolTable symbolTable)
+        private static Operand ParseImmediate(string expression, SymbolTable symbolTable)
         {
             var _expression = expression.Replace("\\s+", "").Trim("#".ToCharArray());
             var isRelocatable = false;
@@ -105,7 +105,7 @@ namespace SIC.Assembler.Model
             };
         }
 
-        public static Operand ParseIndexed(string expression, SymbolTable symbolTable)
+        private static Operand ParseIndexed(string expression, SymbolTable symbolTable)
         {
             var operation = expression.Replace("\\s+", "").Split(INDEXED_ADDRESSING_TOKEN.ToArray());
 
@@ -126,7 +126,7 @@ namespace SIC.Assembler.Model
             };
         }
 
-        public static Operand ParseIndirect(string expression, SymbolTable symbolTable)
+        private static Operand ParseIndirect(string expression, SymbolTable symbolTable)
         {
             var symbol = GetSymbol(expression.Replace("\\s+", ""), symbolTable, "@");
 
@@ -139,7 +139,7 @@ namespace SIC.Assembler.Model
             };
         }
 
-        public static Operand ParseLiteralNumber(string expression, LiteralTable literalTable)
+        private static Operand ParseLiteralNumber(string expression, LiteralTable literalTable)
         {
             var literal = literalTable.ParseLiteral(expression.Replace("\\s+", ""));
 
@@ -152,7 +152,7 @@ namespace SIC.Assembler.Model
             };
         }
 
-        public static Operand ParseLiteralString(string expression, LiteralTable literalTable)
+        private static Operand ParseLiteralString(string expression, LiteralTable literalTable)
         {
             var literal = literalTable.ParseLiteral(expression.Replace("\\s+", ""));
 

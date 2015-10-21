@@ -21,7 +21,7 @@ namespace SIC.Assembler.Providers
             {
                 try
                 {
-                    printFunction(Operand.Parse(operandString.ToLower(), 0, symbolTable, literalTable));
+                    printFunction(Operand.CreateOperand(operandString.ToLower(), 0, symbolTable, literalTable));
                 }
                 catch (Exception ex)
                 {
