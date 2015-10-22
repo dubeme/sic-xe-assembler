@@ -6,18 +6,33 @@
     public enum LiteralType
     {
         /// <summary>
-        /// A string literal.
-        /// </summary>
-        String,
-
-        /// <summary>
-        /// Numeric literal.
-        /// </summary>
-        Number,
-
-        /// <summary>
         /// Unknown literal type.
         /// </summary>
-        Unknown
+        Unknown = 0,
+
+        /// <summary>
+        /// A string literal.
+        /// </summary>
+        StringLiteral = 1,
+
+        /// <summary>
+        /// An int literal.
+        /// </summary>
+        NumberLiteral = 2,
+
+        /// <summary>
+        /// The just number
+        /// </summary>
+        JustNumber = 3,
+
+        /// <summary>
+        /// The constant number
+        /// </summary>
+        ConstantNumber = 4,
+
+        /// <summary>
+        /// The constant string
+        /// </summary>
+        ConstantString = 5
     }
 }

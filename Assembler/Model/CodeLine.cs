@@ -1,6 +1,6 @@
 ﻿using SIC.Assembler.Providers;
 using System;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SIC.Assembler.Model
 {
@@ -8,107 +8,37 @@ namespace SIC.Assembler.Model
     {
         private const int WORD_SIZE = 3;
         public int Address { get; private set; }
-        public string Comment { get; set; }
+        public int ByteSize { get; private set; }
         public Instruction Instruction { get; set; }
         public Symbol Label { get; set; }
         public int LineNumber { get; private set; }
         public string ObjectCode { get; set; }
         public Operand Operand { get; set; }
-
-        public static int ReserveMemory(Symbol symbol, Instruction instruction, Operand operand)
-        {
-            var unitSize = 0;
-
-            switch (instruction.DirectiveType)
-            {
-                case AssemblerDirectiveType.Resb:
-                    unitSize = 1;
-                    break;
-
-                case AssemblerDirectiveType.Resw:
-                    unitSize = 3;
-                    break;
-            }
-
-            return unitSize * operand.NumericValue;
-        }
-
-        public CodeLine Parse(string codeline)
+        
+        public CodeLine Create(string codeline, SymbolTable symbolTable, LiteralTable literalTable, int lineNumber, int currentPC)
         {
             if (string.IsNullOrWhiteSpace(codeline))
             {
                 return null;
             }
 
-            StringBuilder str = new StringBuilder();
-            var foundOpeningLiteralQuote = false;
-            var readNoMore = false;
-
-            foreach (var ch in codeline.TrimStart())
+            if (codeline.StartsWith("."))
             {
-                if (ch != ' ' || foundOpeningLiteralQuote)
-                {
-                    str.Append(ch);
-
-                    if (ch == '\'')
-                    {
-                        if (foundOpeningLiteralQuote)
-                        {
-                            readNoMore = true;
-                        }
-                    }
-                    foundOpeningLiteralQuote = ch == '\'';
-                }
-                else
-                {
-                }
-            }
-            /*
-
-            switch (instruction.DirectiveType)
-            {
-                case AssemblerDirectiveType.Start:
-                    break;
-
-                case AssemblerDirectiveType.End:
-                    break;
-
-                case AssemblerDirectiveType.Byte:
-                    break;
-
-                case AssemblerDirectiveType.Word:
-                    break;
-
-                case AssemblerDirectiveType.Resb:
-                    break;
-
-                case AssemblerDirectiveType.Resw:
-                    break;
-
-                case AssemblerDirectiveType.Base:
-                    break;
-
-                case AssemblerDirectiveType.Equ:
-                    break;
-
-                case AssemblerDirectiveType.Extdef:
-                    break;
-
-                case AssemblerDirectiveType.Extref:
-                    break;
-
-                case AssemblerDirectiveType.Unknown:
-                    break;
-
-                default:
-                    break;
+                return null;
             }
 
-            */
-            // Trim line
-            return new CodeLine(); ;
+            int newPc;
+            var line = CreateCodeLine(Regex.Split(codeline, "\\s+"), symbolTable, literalTable, lineNumber, currentPC, out newPc);
+
+            if (line == null || !ProgramCounterValid(newPc))
+            {
+                return null;
+            }
+
+            line.ByteSize = newPc - currentPC;
+            return line;
         }
-        
+
         private static int AdvanceProgramCounter(int programCounter, Instruction instruction, Operand operand)
         {
             var displacement = 0;
@@ -120,29 +50,32 @@ namespace SIC.Assembler.Model
 
             switch (instruction.DirectiveType)
             {
-                case AssemblerDirectiveType.Start: return programCounter;
-                case AssemblerDirectiveType.End: return programCounter;
-                case AssemblerDirectiveType.Byte: return programCounter + operand.ByteSize;
-                case AssemblerDirectiveType.Word: return programCounter + Math.Max(WORD_SIZE, (int)instruction.Format);
-                case AssemblerDirectiveType.Resb: return programCounter + Math.Max(operand.ByteSize, (int)instruction.Format);
-                case AssemblerDirectiveType.Resw: return programCounter + Math.Max(operand.ByteSize, (int)instruction.Format);
-                case AssemblerDirectiveType.Base:
+                case AssemblerDirectiveType.Start:
+                    return operand.NumericValue;
+
+                case AssemblerDirectiveType.End:
+                    displacement = 0;
                     break;
 
-                case AssemblerDirectiveType.Equ:
+                case AssemblerDirectiveType.Byte:
+                    displacement = operand.ByteSize;
                     break;
 
-                case AssemblerDirectiveType.Extdef:
+                case AssemblerDirectiveType.Word:
+                    displacement = Math.Max(WORD_SIZE, (int)instruction.Format);
                     break;
 
-                case AssemblerDirectiveType.Extref:
+                case AssemblerDirectiveType.Resb:
+                case AssemblerDirectiveType.Resw:
+                    displacement = operand.ByteSize;
+                    break;
+
+                default:
+                    displacement = Math.Max(operand.ByteSize, (int)instruction.Format);
                     break;
             }
 
-
-            return programCounter + displacement;// Math.Max(operand.ByteSize, (int)instruction.Format);
-
-            return int.MinValue;
+            return programCounter + displacement;
         }
 
         private static CodeLine CreateCodeLine(string[] columns, SymbolTable symbolTable, LiteralTable literalTable, int lineNumber, int currentPC, out int newPC)
@@ -160,7 +93,7 @@ namespace SIC.Assembler.Model
                 {
                     throw new Exception(string.Format("Can't determine instruction on line #{0}.", lineNumber));
                 }
-                
+
                 symbol = symbolTable.AddSymbol(columns[0], currentPC, false);
 
                 if (columns.Length > 2)
@@ -186,6 +119,11 @@ namespace SIC.Assembler.Model
                 Operand = operand,
                 LineNumber = lineNumber,
             };
+        }
+
+        private bool ProgramCounterValid(int newPc)
+        {
+            return newPc != int.MinValue;
         }
     }
 }

@@ -17,13 +17,13 @@ namespace Assembler.UnitTest.Providers.SymbolTable
             var symbol5 = Symbol.Parse("09 label736743 0");
             var symbol6 = Symbol.Parse("09 label736743 1");
 
-            Assert.AreEqual(symbol1.RFlag, false, "RFlag shouldn't be set");
-            Assert.AreEqual(symbol2.RFlag, false, "RFlag shouldn't be set");
+            Assert.AreEqual(symbol1.RelocatableFlag, false, "RFlag shouldn't be set");
+            Assert.AreEqual(symbol2.RelocatableFlag, false, "RFlag shouldn't be set");
             Assert.AreEqual(symbol3.Label, "label7", "Label should be [label7]");
-            Assert.AreEqual(symbol4.RFlag, false, "RFlag shouldn't be set");
+            Assert.AreEqual(symbol4.RelocatableFlag, false, "RFlag shouldn't be set");
             Assert.AreEqual(symbol4.Value, 0, "Value should be 0");
-            Assert.AreEqual(symbol5.RFlag, false, "RFlag should not be set");
-            Assert.AreEqual(symbol6.RFlag, true, "RFlag should be set");
+            Assert.AreEqual(symbol5.RelocatableFlag, false, "RFlag should not be set");
+            Assert.AreEqual(symbol6.RelocatableFlag, true, "RFlag should be set");
         }
 
         [TestMethod]
@@ -214,7 +214,7 @@ namespace Assembler.UnitTest.Providers.SymbolTable
 
             Assert.AreEqual(symbol.Label, "aeiou");
             Assert.AreEqual(symbol.Value, 4545);
-            Assert.AreEqual(symbol.RFlag, false);
+            Assert.AreEqual(symbol.RelocatableFlag, false);
             Assert.AreEqual(symbol.MFlag, false);
         }
     }

@@ -49,7 +49,8 @@ namespace SIC.Assembler.Model
         }
 
         public bool MFlag { get; set; }
-        public bool RFlag { get; set; }
+        public bool RelocatableFlag { get; set; }
+        public bool ExternalFlag { get; set; }
         public int Value { get; set; }
 
         protected Symbol()
@@ -63,7 +64,7 @@ namespace SIC.Assembler.Model
             {
                 Value = value,
                 Label = ParseSymbolLabel(label),
-                RFlag = isRelocatable,
+                RelocatableFlag = isRelocatable,
                 LongLabel = ParseSymbolLabel(label, false)
             };
         }
@@ -203,7 +204,7 @@ namespace SIC.Assembler.Model
 
         public override string ToString()
         {
-            return string.Format("{0, -15}{1, -15}{2, -15}{3, -15}", this.Label, this.Value, this.RFlag, this.MFlag);
+            return string.Format("{0, -15}{1, -15}{2, -15}{3, -15}", this.Label, this.Value, this.RelocatableFlag, this.MFlag);
         }
 
         private static string InvalidSymbolMessage(string property, string reason, string expected, string actual)

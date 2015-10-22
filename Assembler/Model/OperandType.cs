@@ -6,43 +6,47 @@
     public enum OperandType
     {
         /// <summary>
+        /// Unknown type.
+        /// </summary>
+        Unknown = 0,
+
+        /// <summary>
         /// Simple addressing (Operand is address to value).
         /// </summary>
-        Simple,
+        Simple = 1,
 
         /// <summary>
         /// Immediate value.
         /// </summary>
-        Immediate,
+        Immediate = 2,
 
         /// <summary>
         /// Arithmetic expression.
         /// </summary>
-        ArithmeticExpression,
+        ArithmeticExpression = 3,
 
         /// <summary>
         /// Indexed addressing (Add X register and Address).
         /// </summary>
-        Indexed,
+        Indexed = 4,
 
         /// <summary>
         ///Indirect addressing (Address to Address to value).
         /// </summary>
-        Indirect,
+        Indirect = 5,
 
         /// <summary>
         /// Literal value that represents a series of character(s).
         /// </summary>
-        LiteralString,
+        LiteralString = 6,
 
         /// <summary>
         /// Literal value that represents a number.
         /// </summary>
-        LiteralNumber,
+        LiteralNumber = 7,
 
-        /// <summary>
-        /// Unknown type.
-        /// </summary>
-        Unknown
+        JustNumber = 8,
+        ConstantNumber = 9,
+        ConstantString = 10
     }
 }
