@@ -153,7 +153,7 @@ namespace SIC.Assembler.Model
         public static LiteralType GetLiteralType(string literalString, bool blowUpIfUnknown = false)
         {
             const string STRING_REGEX = @"^[=]?c'([^']|(\\'))+'$";
-            const string NUMBER_REGEX = @"^[=]?x'[\d]+'$";
+            const string NUMBER_REGEX = @"^[=]?x'[a-f\d]+'$";
             var expr = literalString.Trim();
             var startsWithEquals = expr.StartsWith("=");
 

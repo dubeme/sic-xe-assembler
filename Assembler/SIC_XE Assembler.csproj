@@ -49,7 +49,6 @@
     <Compile Include="Model\InstructionFormat.cs" />
     <Compile Include="Model\Literal.cs" />
     <Compile Include="Model\LiteralType.cs" />
-    <Compile Include="Model\Operand.Generic.cs" />
     <Compile Include="Model\OperandType.cs" />
     <Compile Include="Model\OperandValue.cs" />
     <Compile Include="Program.cs" />

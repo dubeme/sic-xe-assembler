@@ -1,4 +1,5 @@
 ﻿using SIC.Assembler.Providers;
+using SIC.Assembler.Utilities.Extensions;
 using System;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,9 @@ namespace SIC.Assembler.Model
         public string Expression { get; set; }
 
         public int NumericValue { get; set; }
+
         public bool Relocatable { get; set; }
+
         public OperandType Type { get; set; }
 
         public static string HeaderText()
@@ -44,19 +47,6 @@ namespace SIC.Assembler.Model
             throw new NotImplementedException();
         }
 
-        public static Operand ParseSimple(string expression, SymbolTable symbolTable)
-        {
-            var symbol = GetSymbol(expression.Replace("\\s+", ""), symbolTable);
-
-            return new Operand
-            {
-                Expression = expression,
-                Type = OperandType.Simple,
-                Relocatable = symbol.RelocatableFlag,
-                NumericValue = symbol.Value
-            };
-        }
-
         public override string ToString()
         {
             return string.Format(FormatString,
@@ -68,45 +58,47 @@ namespace SIC.Assembler.Model
                 this.Type == OperandType.Immediate);
         }
 
-        protected static Operand CreateOperand(string expression, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
-        {
-            object obj;
-            return CreateOperand(expression, programCounter, symbolTable, literalTable, out obj);
-        }
-
-        protected static Operand CreateOperand<T>(string expression, int programCounter, SymbolTable symbolTable, LiteralTable literalTable, out T value)
+        public static Operand CreateOperand(string expression, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
         {
             // Todo: Can BYTE/WORD/RESB/RESW have Literal/Symbol as operand
             var _expression = expression.Replace("\\s+", "");
             var operandType = GetOperandType(_expression);
 
-            value = default(T);
-
-
             switch (operandType)
             {
                 case OperandType.Unknown:
                     break;
+
                 case OperandType.Simple:
                     break;
+
                 case OperandType.Immediate:
                     break;
+
                 case OperandType.ArithmeticExpression:
                     break;
+
                 case OperandType.Indexed:
                     break;
+
                 case OperandType.Indirect:
                     break;
+
                 case OperandType.LiteralString:
                     break;
+
                 case OperandType.LiteralNumber:
                     break;
+
                 case OperandType.JustNumber:
                     break;
+
                 case OperandType.ConstantNumber:
                     break;
+
                 case OperandType.ConstantString:
                     break;
+
                 default:
                     break;
             }
@@ -348,6 +340,27 @@ namespace SIC.Assembler.Model
                 Type = OperandType.LiteralString,
                 Relocatable = false
             };
+        }
+
+        private static Operand ParseSimple(string expression, SymbolTable symbolTable)
+        {
+            var symbols = expression.Replace(@"\s+", "").Split(',');
+            symbols.ForEach(sym => {
+                var value = GetSymbol(sym, symbolTable);
+            });
+            var symbol = GetSymbol(expression.Replace(@"\s+", ""), symbolTable);
+
+            return new Operand
+            {
+                Expression = expression,
+                Type = OperandType.Simple,
+                Relocatable = symbol.RelocatableFlag,
+                NumericValue = symbol.Value
+            };
+        }
+
+        private static void ParseThatShit(string str)
+        {
         }
     }
 }
