@@ -19,6 +19,17 @@ namespace SIC.Assembler.Model
         // PC = -2048 - +2047
         public byte[] Bytes { get; private set; }
 
+        public int ByteSize
+        {
+            get
+            {
+                return this.Bytes.Length;
+            }
+        }
+
+        // NIXBPE
+        public string Expression { get; private set; }
+
         public string HexString
         {
             get
@@ -36,13 +47,6 @@ namespace SIC.Assembler.Model
                 return str.ToString();
             }
         }
-
-        public int ByteSize { get {
-                return this.Bytes.Length;
-            } }
-
-        // NIXBPE
-        public string Expression { get; private set; }
 
         public int NumericValue { get; set; }
 
@@ -306,14 +310,14 @@ namespace SIC.Assembler.Model
 
             var operand = new Operand
             {
-                NumericValue = useNumeric? literal.NumericValue : literal.Address,
+                NumericValue = useNumeric ? literal.NumericValue : literal.Address,
                 Expression = expression,
                 Type = operandType,
                 Relocatable = false,
                 Bytes = literal.Bytes
             };
 
-            return literal.Type == LiteralType.Unknown ? null :  operand;
+            return literal.Type == LiteralType.Unknown ? null : operand;
         }
 
         private static Operand ParseSimple(string expression, SymbolTable symbolTable)
