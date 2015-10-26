@@ -30,7 +30,7 @@ namespace SIC.Assembler.Model
                 Format = InstructionFormat.None,
                 Mnemonic = directive,
                 OpCode = int.MinValue,
-                DirectiveType = (AssemblerDirectiveType)Enum.Parse(typeof(AssemblerDirectiveType), directive)
+                DirectiveType = (AssemblerDirectiveType)Enum.Parse(typeof(AssemblerDirectiveType), directive, true)
             }));
         }
 
