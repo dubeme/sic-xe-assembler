@@ -13,7 +13,7 @@ namespace SIC.Assembler.Providers
         /// <summary>
         /// The _ symbol table
         /// </summary>
-        private BinarySearchTree<Symbol> _SymbolTable;
+        private BinarySearchTree<Symbol> _SymbolTable = new BinarySearchTree<Symbol>();
 
         public Symbol this[string label]
         {
