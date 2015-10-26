@@ -15,18 +15,75 @@ namespace SIC.Assembler.Model
         private const string INDIRECT_ADDRESSING_TOKEN = "@";
         private const int PrintMaxLength = 75;
 
+        // BASE = 0 - 4095
+        // PC = -2048 - +2047
         public byte[] Bytes { get; private set; }
 
-        public int ByteSize { get; set; }
+        public string HexString
+        {
+            get
+            {
+                StringBuilder str = new StringBuilder();
+
+                if (this.Bytes != null)
+                {
+                    foreach (var value in this.Bytes)
+                    {
+                        str.Append(value.ToString("X2"));
+                    }
+                }
+
+                return str.ToString();
+            }
+        }
+
+        public int ByteSize { get {
+                return this.Bytes.Length;
+            } }
 
         // NIXBPE
-        public string Expression { get; set; }
+        public string Expression { get; private set; }
 
         public int NumericValue { get; set; }
 
         public bool Relocatable { get; set; }
 
         public OperandType Type { get; set; }
+
+        public static Operand CreateOperand(string expression)
+        {
+            return new Operand
+            {
+                Expression = expression
+            };
+        }
+
+        public static Operand CreateOperand(string expression, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
+        {
+            return CreateOperand(expression, GetOperandType(expression), programCounter, symbolTable, literalTable);
+        }
+
+        public static Operand CreateOperand(string expression, OperandType type, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
+        {
+            // Todo: Can BYTE/WORD/RESB/RESW have Literal/Symbol as operand
+            var _expression = expression.Replace("\\s+", "");
+
+            switch (type)
+            {
+                case OperandType.Simple: return ParseSimple(_expression, symbolTable);
+                case OperandType.Immediate: return ParseImmediate(_expression, symbolTable);
+                case OperandType.ArithmeticExpression: return ParseArithmeticExpression(_expression, symbolTable, literalTable);
+                case OperandType.Indexed: return ParseIndexed(_expression, symbolTable);
+                case OperandType.Indirect: return ParseIndirect(_expression, symbolTable);
+                case OperandType.LiteralString: return ParseLiteral(_expression, literalTable, OperandType.LiteralString);
+                case OperandType.LiteralNumber: return ParseLiteral(_expression, literalTable, OperandType.LiteralNumber);
+                case OperandType.JustNumber: return ParseLiteral(_expression, literalTable, OperandType.JustNumber, false);
+                case OperandType.ConstantNumber: return ParseLiteral(_expression, literalTable, OperandType.ConstantNumber, false);
+                case OperandType.ConstantString: return ParseLiteral(_expression, literalTable, OperandType.ConstantString, false);
+            }
+
+            throw new Exception("Invalid operand - " + expression);
+        }
 
         public static string HeaderText()
         {
@@ -42,9 +99,9 @@ namespace SIC.Assembler.Model
             return str.ToString();
         }
 
-        public static Operand Parse(string expression)
+        public Operand ParseAs(OperandType type, int programCounter = int.MinValue, SymbolTable symbolTable = null, LiteralTable literalTable = null)
         {
-            throw new NotImplementedException();
+            return CreateOperand(this.Expression, type, programCounter, symbolTable, literalTable);
         }
 
         public override string ToString()
@@ -56,65 +113,6 @@ namespace SIC.Assembler.Model
                 this.Type == OperandType.Indexed,
                 this.Type == OperandType.Indirect,
                 this.Type == OperandType.Immediate);
-        }
-
-        public static Operand CreateOperand(string expression, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
-        {
-            // Todo: Can BYTE/WORD/RESB/RESW have Literal/Symbol as operand
-            var _expression = expression.Replace("\\s+", "");
-            var operandType = GetOperandType(_expression);
-
-            switch (operandType)
-            {
-                case OperandType.Unknown:
-                    break;
-
-                case OperandType.Simple:
-                    break;
-
-                case OperandType.Immediate:
-                    break;
-
-                case OperandType.ArithmeticExpression:
-                    break;
-
-                case OperandType.Indexed:
-                    break;
-
-                case OperandType.Indirect:
-                    break;
-
-                case OperandType.LiteralString:
-                    break;
-
-                case OperandType.LiteralNumber:
-                    break;
-
-                case OperandType.JustNumber:
-                    break;
-
-                case OperandType.ConstantNumber:
-                    break;
-
-                case OperandType.ConstantString:
-                    break;
-
-                default:
-                    break;
-            }
-
-            switch (operandType)
-            {
-                case OperandType.Simple: return ParseSimple(_expression, symbolTable);
-                case OperandType.Immediate: return ParseImmediate(_expression, symbolTable);
-                case OperandType.ArithmeticExpression: return ParseArithmeticExpression(_expression, symbolTable, literalTable);
-                case OperandType.Indexed: return ParseIndexed(_expression, symbolTable);
-                case OperandType.Indirect: return ParseIndirect(_expression, symbolTable);
-                case OperandType.LiteralString: return ParseLiteralString(_expression, literalTable);
-                case OperandType.LiteralNumber: return ParseLiteralNumber(_expression, literalTable);
-            }
-
-            throw new Exception("Invalid operand - " + expression);
         }
 
         private static OperandType GetOperandType(string operandString)
@@ -301,51 +299,28 @@ namespace SIC.Assembler.Model
             };
         }
 
-        private static Operand ParseLiteral(string expression, LiteralTable literalTable, OperandType operandType)
+        private static Operand ParseLiteral(string expression, LiteralTable literalTable, OperandType operandType, bool addToLiteralTable = true)
         {
-            var literal = literalTable.ParseLiteral(expression.Replace("\\s+", ""));
+            var literal = literalTable.ParseLiteral(expression.Replace("\\s+", ""), addToLiteralTable);
+            var useNumeric = literal.Type == LiteralType.JustNumber || literal.Type == LiteralType.ConstantNumber;
 
-            Literal.Parse(expression);
-
-            return new Operand
+            var operand = new Operand
             {
-                NumericValue = literal.Address,
+                NumericValue = useNumeric? literal.NumericValue : literal.Address,
                 Expression = expression,
                 Type = operandType,
-                Relocatable = false
+                Relocatable = false,
+                Bytes = literal.Bytes
             };
-        }
 
-        private static Operand ParseLiteralNumber(string expression, LiteralTable literalTable)
-        {
-            var literal = literalTable.ParseLiteral(expression.Replace("\\s+", ""));
-
-            return new Operand
-            {
-                NumericValue = literal.Address,
-                Expression = expression,
-                Type = OperandType.LiteralNumber,
-                Relocatable = false
-            };
-        }
-
-        private static Operand ParseLiteralString(string expression, LiteralTable literalTable)
-        {
-            var literal = literalTable.ParseLiteral(expression.Replace("\\s+", ""));
-
-            return new Operand
-            {
-                NumericValue = literal.Address,
-                Expression = expression,
-                Type = OperandType.LiteralString,
-                Relocatable = false
-            };
+            return literal.Type == LiteralType.Unknown ? null :  operand;
         }
 
         private static Operand ParseSimple(string expression, SymbolTable symbolTable)
         {
             var symbols = expression.Replace(@"\s+", "").Split(',');
-            symbols.ForEach(sym => {
+            symbols.ForEach(sym =>
+            {
                 var value = GetSymbol(sym, symbolTable);
             });
             var symbol = GetSymbol(expression.Replace(@"\s+", ""), symbolTable);
