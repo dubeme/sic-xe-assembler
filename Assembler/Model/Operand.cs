@@ -305,7 +305,18 @@ namespace SIC.Assembler.Model
 
         private static Operand ParseLiteral(string expression, LiteralTable literalTable, OperandType operandType, bool addToLiteralTable = true)
         {
-            var literal = literalTable.ParseLiteral(expression.Replace("\\s+", ""), addToLiteralTable);
+            var expr = expression.Replace("\\s+", "");
+            var literal = new Literal();
+
+            if (literalTable == null)
+            {
+                literal = Literal.Parse(expr);
+            }
+            else
+            {
+                literal = literalTable.ParseLiteral(expr, addToLiteralTable);
+            }
+
             var useNumeric = literal.Type == LiteralType.JustNumber || literal.Type == LiteralType.ConstantNumber;
 
             var operand = new Operand
