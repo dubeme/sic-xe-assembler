@@ -13,35 +13,33 @@ namespace SIC.Assembler.Model
     /// </summary>
     public class Literal : IComparable
     {
-        /// <summary>
-        /// The format string
-        /// </summary>
         public const string FormatString = "{0, -24}{1, 24}{2, 10}{3, 16}";
-
-        /// <summary>
-        /// The print maximum length
-        /// </summary>
         public const int PrintMaxLength = 74;
 
-        /// <summary>
-        /// The litera l_ number
-        /// </summary>
+        private const int DEFAULT_ADDRESS = int.MinValue;
         private const char LITERAL_NUMBER = 'x';
-
-        /// <summary>
-        /// The litera l_ string
-        /// </summary>
         private const char LITERAL_STRING = 'c';
 
-        /// <summary>
-        /// Gets or sets the address of this Literal{T}.
-        /// </summary>
         public int Address { get; set; }
 
-        /// <summary>
-        /// Gets or sets the length of the byte.
-        /// </summary>
-        /// <value>The length of the byte.</value>
+        public string BytesAsciiString
+        {
+            get
+            {
+                StringBuilder str = new StringBuilder();
+
+                if (this.Bytes != null)
+                {
+                    foreach (var value in this.Bytes)
+                    {
+                        str.Append((char)value);
+                    }
+                }
+
+                return str.ToString();
+            }
+        }
+
         public int ByteLength
         {
             get
@@ -50,25 +48,17 @@ namespace SIC.Assembler.Model
             }
         }
 
-        /// <summary>
-        /// Gets the values.
-        /// </summary>
         public byte[] Bytes { get; private set; }
 
-        /// <summary>
-        /// Gets or sets the expression of this Literal{T}.
-        /// </summary>
-        public string Expression { get; set; }
+        public int NumericValue
+        {
+            get
+            {
+                return int.Parse(this.BytesHexString, NumberStyles.HexNumber);
+            }
+        }
 
-        /// <summary>
-        /// Gets or sets the type of this Literal.
-        /// </summary>
-        public LiteralType Type { get; set; }
-
-        /// <summary>
-        /// Gets the value of this Literal{T}.
-        /// </summary>
-        public string ValueStr
+        public string BytesDecimalString
         {
             get
             {
@@ -76,19 +66,9 @@ namespace SIC.Assembler.Model
 
                 if (this.Bytes != null)
                 {
-                    if (this.Type == LiteralType.NumberLiteral)
+                    foreach (var value in this.Bytes)
                     {
-                        foreach (var value in this.Bytes)
-                        {
-                            str.Append(value.ToString("X2"));
-                        }
-                    }
-                    else
-                    {
-                        foreach (var value in this.Bytes)
-                        {
-                            str.Append((char)value);
-                        }
+                        str.Append(value);
                     }
                 }
 
@@ -96,12 +76,28 @@ namespace SIC.Assembler.Model
             }
         }
 
-        /// <summary>
-        /// Parses the value.
-        /// </summary>
-        /// <param name="valStr">The value string.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">Can't be null or whitespace</exception>
+        public string Expression { get; set; }
+
+        public string BytesHexString
+        {
+            get
+            {
+                StringBuilder str = new StringBuilder();
+
+                if (this.Bytes != null)
+                {
+                    foreach (var value in this.Bytes)
+                    {
+                        str.Append(value.ToString("X2"));
+                    }
+                }
+
+                return str.ToString();
+            }
+        }
+
+        public LiteralType Type { get; set; }
+
         public static IEnumerable<byte> GetBytes(string valStr)
         {
             if (string.IsNullOrWhiteSpace(valStr))
@@ -145,11 +141,6 @@ namespace SIC.Assembler.Model
             return Chunkify(valStr, chunkSize).Select(transformer);
         }
 
-        /// <summary>
-        /// Gets the type of the literal.
-        /// </summary>
-        /// <param name="literalString">The literal string.</param>
-        /// <returns></returns>
         public static LiteralType GetLiteralType(string literalString, bool blowUpIfUnknown = false)
         {
             const string STRING_REGEX = @"^[=]?c'([^']|(\\'))+'$";
@@ -195,11 +186,6 @@ namespace SIC.Assembler.Model
             return GetLiteralType(expr) != LiteralType.Unknown;
         }
 
-        /// <summary>
-        /// Parses the specified literal string.
-        /// </summary>
-        /// <param name="literalString">The literal string.</param>
-        /// <returns></returns>
         public static Literal Parse(string literalString)
         {
             if (string.IsNullOrWhiteSpace(literalString))
@@ -211,37 +197,26 @@ namespace SIC.Assembler.Model
             {
                 Expression = literalString,
                 Type = GetLiteralType(literalString, blowUpIfUnknown: true),
-                Address = int.MinValue,
+                Address = DEFAULT_ADDRESS,
                 Bytes = GetBytes(literalString.Trim()).ToArray()
             };
         }
 
-        /// <summary>
-        /// Compares to.
-        /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <returns></returns>
         public int CompareTo(object obj)
         {
             var literal = (Literal)obj;
-            return this.ValueStr.CompareTo(literal.ValueStr);
+            return this.BytesHexString.CompareTo(literal.BytesHexString);
         }
 
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         public override string ToString()
         {
-            return string.Format(FormatString, this.Expression, this.ValueStr, this.ByteLength, this.Address);
+            if (this.Type == LiteralType.StringLiteral || this.Type == LiteralType.ConstantString)
+            {
+                return string.Format(FormatString, this.Expression, this.BytesAsciiString, this.ByteLength, this.Address);
+            }
+            return string.Format(FormatString, this.Expression, this.BytesHexString, this.ByteLength, this.Address);
         }
 
-        /// <summary>
-        /// Chunkifies the specified string.
-        /// </summary>
-        /// <param name="str">The string.</param>
-        /// <param name="chunkSize">Size of the chunk.</param>
-        /// <returns></returns>
         private static IEnumerable<string> Chunkify(string str, int chunkSize)
         {
             return Enumerable.Range(0, str.Length / chunkSize)
