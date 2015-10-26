@@ -16,7 +16,7 @@ namespace SIC.Assembler.Utilities
         /// <param name="ignoreBlankLines">if set to <c>true</c> [ignore blank lines].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">Must provide a non-null OR empty file path</exception>
-        public static string[] GetAllLines(string filePath, bool ignoreBlankLines)
+        public static string[] GetAllLines(string filePath, bool ignoreBlankLines = false)
         {
             var lines = new List<string>();
             if (string.IsNullOrWhiteSpace(filePath))
