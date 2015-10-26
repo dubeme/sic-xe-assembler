@@ -93,14 +93,14 @@ namespace SIC.Assembler.Model
                 AssemblerDirectiveType.Unknown);
         }
 
-        private static void AddInstruction(string mnemonic, int opCode, InstructionFormat format, AssemblerDirectiveType unknown)
+        private static void AddInstruction(string mnemonic, int opCode, InstructionFormat format, AssemblerDirectiveType directiveType)
         {
             AllInstructions.Add(mnemonic.ToLower(), new Instruction
             {
                 Mnemonic = mnemonic,
                 OpCode = opCode,
                 Format = format,
-                DirectiveType = unknown
+                DirectiveType = directiveType
             });
         }
 
@@ -128,6 +128,7 @@ namespace SIC.Assembler.Model
                         {
                             Mnemonic = instruction.Mnemonic,
                             OpCode = instruction.OpCode,
+                            DirectiveType = instruction.DirectiveType,
                             Format = isFormat4 ? InstructionFormat.Four : instruction.Format
                         };
                     }

@@ -1,6 +1,7 @@
-﻿using SIC.Assembler.Providers;
+﻿using SIC.Assembler.Model;
+using SIC.Assembler.Providers;
 using SIC.Assembler.Utilities;
-using SIC.Assembler.Utilities.Model;
+using SIC.Assembler.Utilities.Extensions;
 using System;
 
 namespace SIC.Assembler
@@ -17,22 +18,38 @@ namespace SIC.Assembler
             Console.BufferWidth = 256;
             Console.BufferHeight = short.MaxValue - 1;
 
-            var symbolTable = new SymbolTable();
-            var codeLines = HelperMethods.GetAllNonEmptyLines("symbols.dat");
-            var symbolLabels = HelperMethods.GetAllNonEmptyLines("test.dat");
-            var expressions = HelperMethods.GetAllNonEmptyLines("expr.dat");
+            if (args.Length > 0)
+            {
+                var sourceCode = args[0];
+                var symbolTable = new SymbolTable();
+                var literalTable = new LiteralTable();
+                var opcodes = HelperMethods.GetAllNonEmptyLines("opcodes");
+                var codeLines = HelperMethods.GetAllLines(sourceCode);
 
-            Prompt("Start building Symbol Table.", ENTER_TO_PROCEED);
-            symbolTable.BuildSymbolTable(codeLines, PrintWithTabPrefix, PrintFancyError);
+                opcodes.ForEach(opcode =>
+                {
+                    var line = opcode.Split(' ');
+                    Instruction.RegisterInstruction(line[0], line[1], byte.Parse(line[2]));
+                });
 
-            Prompt("\n\nPrint Tree[In Order].", ENTER_TO_PROCEED);
-            symbolTable.Print(TraverseOrder.InOrder, PrintWithTabPrefix);
+                var lines = CodeLine.PerformPass1(codeLines, symbolTable, literalTable);
 
-            Prompt("\n\nProcess Expressions.", ENTER_TO_PROCEED);
-            var literalTable = OperandEvaluator.ParseExpressions(expressions, symbolTable, PrintWithTabPrefix, PrintFancyError);
 
-            Prompt("\n\nPrint Literal Table.", ENTER_TO_PROCEED);
-            PrintWithTabPrefix(literalTable);
+                lines.ForEach(line => {
+
+                    if (line != null)
+                    {
+                        PrintWithTabPrefix(string.Format("{0, -10:X5}{1}", line.ProgramCounter, line));
+                    }
+                });
+
+
+                symbolTable.Print(Utilities.Model.TraverseOrder.InOrder, PrintWithTabPrefix);
+            }
+            else
+            {
+                PrintWithTabPrefix("Source code not specified");
+            }
 
             Prompt("\n\n", "Press Enter to terminate...");
         }

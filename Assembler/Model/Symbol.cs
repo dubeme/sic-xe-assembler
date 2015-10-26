@@ -16,7 +16,7 @@ namespace SIC.Assembler.Model
         public const string VALUE_PATTERN = "^(\\+|-)?\\d+$";
         private const int LABEL_MAX_LENGTH = 21;
         private const int LABEL_MIN_LENGTH = 1;
-        private const int LABEL_TRIM_LENGTH = 21;
+        private const int LABEL_TRIM_LENGTH = 6;
 
         private string _label;
         private string _longLabel;
@@ -204,7 +204,7 @@ namespace SIC.Assembler.Model
 
         public override string ToString()
         {
-            return string.Format("{0, -15}{1, -15}{2, -15}{3, -15}", this.Label, this.Value, this.RelocatableFlag, this.MFlag);
+            return string.Format("{0, -15}{1, -15:X2}{2, -15}{3, -15}", this.Label, this.Value, this.RelocatableFlag, this.MFlag);
         }
 
         private static string InvalidSymbolMessage(string property, string reason, string expected, string actual)
