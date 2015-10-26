@@ -28,11 +28,11 @@
         /// <summary>
         /// The constant number
         /// </summary>
-        ConstantNumber = 4,
+        WordConstant = 4,
 
         /// <summary>
         /// The constant string
         /// </summary>
-        ConstantString = 5
+        ByteConstant = 5
     }
 }

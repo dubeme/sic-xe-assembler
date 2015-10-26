@@ -105,7 +105,7 @@ namespace SIC.Assembler.Model
 
         public Operand ParseAs(OperandType type, int programCounter = int.MinValue, SymbolTable symbolTable = null, LiteralTable literalTable = null)
         {
-            return CreateOperand(this.Expression, type, programCounter, symbolTable, literalTable);
+            return CreateOperand(this.Expression, programCounter, symbolTable, literalTable);
         }
 
         public override string ToString()
@@ -149,10 +149,10 @@ namespace SIC.Assembler.Model
                 case LiteralType.JustNumber:
                     return OperandType.JustNumber;
 
-                case LiteralType.ConstantNumber:
+                case LiteralType.WordConstant:
                     return OperandType.ConstantNumber;
 
-                case LiteralType.ConstantString:
+                case LiteralType.ByteConstant:
                     return OperandType.ConstantString;
             }
 
@@ -317,7 +317,7 @@ namespace SIC.Assembler.Model
                 literal = literalTable.ParseLiteral(expr, addToLiteralTable);
             }
 
-            var useNumeric = literal.Type == LiteralType.JustNumber || literal.Type == LiteralType.ConstantNumber;
+            var useNumeric = literal.Type == LiteralType.JustNumber || literal.Type == LiteralType.WordConstant;
 
             var operand = new Operand
             {

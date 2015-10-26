@@ -74,10 +74,13 @@ namespace SIC.Assembler.Model
 
         public override string ToString()
         {
-            return string.Format("{0, -21}{1, -10}{2}",
-                        this.Label == null ? "" : this.Label.LongLabel,
-                        this.Instruction == null ? "" : this.Instruction.Mnemonic,
-                        this.Operand == null ? "" : this.Operand.Expression);
+            return string.Format("{0, -5}{1, -10:X5}{2, -5}{3, -21}{4, -10}{5}",
+                this.LineNumber,
+                this.ProgramCounter,
+                this.ByteSize,
+                this.Label == null ? "" : this.Label.LongLabel,
+                this.Instruction == null ? "" : this.Instruction.Mnemonic,
+                this.Operand == null ? "" : this.Operand.Expression);
         }
 
         private static int AdvanceProgramCounter(int programCounter, Instruction instruction, Operand operand)

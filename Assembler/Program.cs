@@ -17,6 +17,8 @@ namespace SIC.Assembler
         {
             Console.BufferWidth = 256;
             Console.BufferHeight = short.MaxValue - 1;
+            Console.WindowHeight += 10;
+            Console.WindowWidth += 10;
 
             if (args.Length > 0)
             {
@@ -35,14 +37,14 @@ namespace SIC.Assembler
                 var lines = CodeLine.PerformPass1(codeLines, symbolTable, literalTable);
 
 
+                PrintWithTabPrefix("\n\n");
                 lines.ForEach(line => {
-
                     if (line != null)
                     {
-                        PrintWithTabPrefix(string.Format("{0, -10:X5}{1}", line.ProgramCounter, line));
+                        PrintWithTabPrefix(line);
                     }
                 });
-
+                PrintWithTabPrefix("\n\n");
 
                 symbolTable.Print(Utilities.Model.TraverseOrder.InOrder, PrintWithTabPrefix);
             }

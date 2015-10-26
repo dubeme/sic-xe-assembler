@@ -111,7 +111,7 @@ namespace SIC.Assembler.Model
 
             valStr = valStr.TrimStart('=');
 
-            if (type == LiteralType.StringLiteral || type == LiteralType.ConstantString)
+            if (type == LiteralType.StringLiteral || type == LiteralType.ByteConstant)
             {
                 chunkSize = 1;
                 transformer = (str) => (byte)str[0];
@@ -154,7 +154,7 @@ namespace SIC.Assembler.Model
                 {
                     return LiteralType.StringLiteral;
                 }
-                return LiteralType.ConstantString;
+                return LiteralType.ByteConstant;
             }
             else if (Regex.IsMatch(expr, NUMBER_REGEX, RegexOptions.IgnoreCase))
             {
@@ -162,7 +162,7 @@ namespace SIC.Assembler.Model
                 {
                     return LiteralType.NumberLiteral;
                 }
-                return LiteralType.ConstantNumber;
+                return LiteralType.WordConstant;
             }
             else
             {
@@ -210,7 +210,7 @@ namespace SIC.Assembler.Model
 
         public override string ToString()
         {
-            if (this.Type == LiteralType.StringLiteral || this.Type == LiteralType.ConstantString)
+            if (this.Type == LiteralType.StringLiteral || this.Type == LiteralType.ByteConstant)
             {
                 return string.Format(FormatString, this.Expression, this.BytesAsciiString, this.ByteLength, this.Address);
             }
