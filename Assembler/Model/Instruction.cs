@@ -25,13 +25,12 @@ namespace SIC.Assembler.Model
 
         static Instruction()
         {
-            AssemblerDirectives.ForEach(directive => AllInstructions.Add(directive, new Instruction
-            {
-                Format = InstructionFormat.None,
-                Mnemonic = directive,
-                OpCode = int.MinValue,
-                DirectiveType = (AssemblerDirectiveType)Enum.Parse(typeof(AssemblerDirectiveType), directive, true)
-            }));
+            AssemblerDirectives.ForEach(directive => AddInstruction(
+                directive,
+                int.MinValue,
+                InstructionFormat.None,
+                (AssemblerDirectiveType)Enum.Parse(typeof(AssemblerDirectiveType), directive, true))
+            );
         }
 
         private Instruction()
@@ -77,11 +76,31 @@ namespace SIC.Assembler.Model
 
         public static void RegisterInstruction(string mnemonic, string hexOpCode, byte format)
         {
-            AllInstructions.Add(mnemonic, new Instruction
+            if (string.IsNullOrWhiteSpace(mnemonic))
+            {
+                throw new ArgumentException("Mnemonic can't be empty OR null", nameof(mnemonic));
+            }
+
+            if (string.IsNullOrWhiteSpace(hexOpCode))
+            {
+                throw new ArgumentException("HexOpCode can't be empty OR null", nameof(hexOpCode));
+            }
+
+            AddInstruction(
+                mnemonic,
+                int.Parse(hexOpCode, System.Globalization.NumberStyles.HexNumber),
+                (InstructionFormat)Enum.Parse(typeof(InstructionFormat), format.ToString()),
+                AssemblerDirectiveType.Unknown);
+        }
+
+        private static void AddInstruction(string mnemonic, int opCode, InstructionFormat format, AssemblerDirectiveType unknown)
+        {
+            AllInstructions.Add(mnemonic.ToLower(), new Instruction
             {
                 Mnemonic = mnemonic,
-                OpCode = int.Parse(hexOpCode, System.Globalization.NumberStyles.HexNumber),
-                Format = (InstructionFormat)Enum.Parse(typeof(InstructionFormat), format.ToString())
+                OpCode = opCode,
+                Format = format,
+                DirectiveType = unknown
             });
         }
 
@@ -98,21 +117,22 @@ namespace SIC.Assembler.Model
 
                     instructionStr = instructionStr.ToLower();
                     var isFormat4 = instructionStr.StartsWith("+");
-                    var instruction = AllInstructions[instructionStr.TrimStart('+')];
+                    var mnemonic = instructionStr.TrimStart('+');
 
-                    if (instruction == null)
+                    if (AllInstructions.ContainsKey(mnemonic))
                     {
-                        return null;
+                        var instruction = AllInstructions[mnemonic];
+                        // In other to avoid someone modifying the original values for the instruction
+                        // I'm returning a totally new object
+                        return new Instruction
+                        {
+                            Mnemonic = instruction.Mnemonic,
+                            OpCode = instruction.OpCode,
+                            Format = isFormat4 ? InstructionFormat.Four : instruction.Format
+                        };
                     }
 
-                    // In other to avoid someone modifying the original values for the instruction
-                    // I'm returning a totally new object
-                    return new Instruction
-                    {
-                        Mnemonic = instruction.Mnemonic,
-                        OpCode = instruction.OpCode,
-                        Format = isFormat4 ? InstructionFormat.Four : instruction.Format
-                    };
+                    return null;
                 }
             }
         }
