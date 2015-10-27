@@ -9,7 +9,8 @@ namespace SIC.Assembler.Model
     /// </summary>
     public class Symbol : IComparable
     {
-        public const string LABEL_PATTERN = "^([a-z])[\\w]{0,20}$";
+        public const string LABEL_FIRST_CHAR_PATTERN = "^[a-zA-Z]";
+        public const string LABEL_PATTERN = "^([a-zA-Z])[\\w]{0,20}$";
         public const string RFLAG_FALSE_PATTERN = "^(false)$|^(f)$|^(0)$";
         public const string RFLAG_PATTERN = "^(true|false)$|^(t|f)$|^(1|0)$";
         public const string RFLAG_TRUE_PATTERN = "^(true)$|^(t)$|^(1)$";
@@ -21,6 +22,12 @@ namespace SIC.Assembler.Model
         private string _label;
         private string _longLabel;
 
+        protected Symbol()
+        {
+        }
+
+        public bool ExternalFlag { get; set; }
+
         public string Label
         {
             get
@@ -31,7 +38,6 @@ namespace SIC.Assembler.Model
             set
             {
                 this._label = Symbol.ParseSymbolLabel(value);
-                this.LongLabel = value;
             }
         }
 
@@ -44,28 +50,22 @@ namespace SIC.Assembler.Model
             }
             set
             {
-                this._longLabel = Symbol.ParseSymbolLabel(value, false);
+                this._longLabel = Symbol.ParseSymbolLabel(value, false, false);
             }
         }
 
         public bool MFlag { get; set; }
         public bool RelocatableFlag { get; set; }
-        public bool ExternalFlag { get; set; }
         public int Value { get; set; }
-
-        protected Symbol()
-        {
-
-        }
 
         public static Symbol CreateSymbol(string label, int value, bool isRelocatable)
         {
             return new Symbol
             {
                 Value = value,
-                Label = ParseSymbolLabel(label),
+                Label = label,
                 RelocatableFlag = isRelocatable,
-                LongLabel = ParseSymbolLabel(label, false)
+                LongLabel = label
             };
         }
 
@@ -85,10 +85,10 @@ namespace SIC.Assembler.Model
                 throw new ArgumentException(err);
             }
 
-            return CreateSymbol(ParseSymbolLabel(tokens[1]), ParseSymbolValue(tokens[0]), ParseSymbolRFlag(tokens[2]));
+            return CreateSymbol(ParseSymbolLabel(tokens[1], false, false), ParseSymbolValue(tokens[0]), ParseSymbolRFlag(tokens[2]));
         }
 
-        public static string ParseSymbolLabel(string label, bool shorten = true)
+        public static string ParseSymbolLabel(string label, bool toLower = true, bool shorten = true)
         {
             string reason = "";
             string expected = "";
@@ -96,16 +96,21 @@ namespace SIC.Assembler.Model
 
             try
             {
-                label = label.Trim().ToLower();
+                label = label.Trim();
+
+                if (toLower)
+                {
+                    label = label.ToLower();
+                }
 
                 if (!(label.Length >= LABEL_MIN_LENGTH && label.Length <= LABEL_MAX_LENGTH))
                 {
                     reason = "Out of range";
-                    expected = string.Format("[{0},{1}] Aphabets, Numbers and Underscore", LABEL_MIN_LENGTH, LABEL_MAX_LENGTH);
+                    expected = string.Format("[{0},{1}] Alphabets, Numbers and Underscore", LABEL_MIN_LENGTH, LABEL_MAX_LENGTH);
                     throw new Exception();
                 }
 
-                if (!Regex.IsMatch(label, "^[a-z]"))
+                if (!Regex.IsMatch(label, LABEL_FIRST_CHAR_PATTERN))
                 {
                     reason = "Invalid first character";
                     expected = "Alphabets";
@@ -115,7 +120,7 @@ namespace SIC.Assembler.Model
                 if (!Regex.IsMatch(label, LABEL_PATTERN))
                 {
                     reason = "Invalid symbol";
-                    expected = "Aphabets, Numbers and Underscore";
+                    expected = "Alphabets, Numbers and Underscore";
                     throw new Exception();
                 }
 
@@ -204,7 +209,7 @@ namespace SIC.Assembler.Model
 
         public override string ToString()
         {
-            return string.Format("{0, -15}{1, -15:X2}{2, -15}{3, -15}", this.Label, this.Value, this.RelocatableFlag, this.MFlag);
+            return string.Format("{0, -21}{1, -15:X5}{2, -15}{3, -15}", this.LongLabel, this.Value, this.RelocatableFlag, this.MFlag);
         }
 
         private static string InvalidSymbolMessage(string property, string reason, string expected, string actual)
