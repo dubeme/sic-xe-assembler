@@ -22,31 +22,18 @@ namespace SIC.Assembler
 
             if (args.Length > 0)
             {
-                var sourceCode = args[0];
-                var symbolTable = new SymbolTable();
-                var literalTable = new LiteralTable();
-                var opcodes = HelperMethods.GetAllNonEmptyLines("opcodes");
-                var codeLines = HelperMethods.GetAllLines(sourceCode);
-
-                opcodes.ForEach(opcode =>
+                HelperMethods.GetAllNonEmptyLines("opcodes").ForEach(opcode =>
                 {
                     var line = opcode.Split(' ');
                     Instruction.RegisterInstruction(line[0], line[1], byte.Parse(line[2]));
                 });
 
-                var lines = CodeLine.PerformPass1(codeLines, symbolTable, literalTable);
-
-
-                PrintWithTabPrefix("\n\n");
-                lines.ForEach(line => {
-                    if (line != null)
-                    {
-                        PrintWithTabPrefix(line);
-                    }
-                });
-                PrintWithTabPrefix("\n\n");
-
-                symbolTable.Print(Utilities.Model.TraverseOrder.InOrder, PrintWithTabPrefix);
+                foreach (var filePath in args)
+                {
+                    PrintWithTabPrefix(string.Format("\n\nParsing - {0}\n\n", filePath));
+                    CodeLine.PerformPass1(HelperMethods.GetAllLines(filePath), PrintWithTabPrefix, PrintFancyError, Prompt);
+                    Prompt("Parse next file", "Press enter to continue...");
+                }
             }
             else
             {
