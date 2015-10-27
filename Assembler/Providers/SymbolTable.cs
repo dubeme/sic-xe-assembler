@@ -134,6 +134,7 @@ namespace SIC.Assembler.Providers
         {
             if (this._SymbolTable != null)
             {
+                printFunction(Symbol.GetSymbolHeader());
                 this._SymbolTable.Print(order, printFunction);
             }
         }

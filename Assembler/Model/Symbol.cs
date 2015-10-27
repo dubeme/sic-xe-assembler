@@ -18,7 +18,8 @@ namespace SIC.Assembler.Model
         private const int LABEL_MAX_LENGTH = 21;
         private const int LABEL_MIN_LENGTH = 1;
         private const int LABEL_TRIM_LENGTH = 6;
-
+        private const string FORMAT_STRING = "{0, -21}{1, -15:X5}{2, -15}{3, -15}";
+        private static string TOP_BAR = new string('-', 64);
         private string _label;
         private string _longLabel;
 
@@ -209,7 +210,12 @@ namespace SIC.Assembler.Model
 
         public override string ToString()
         {
-            return string.Format("{0, -21}{1, -15:X5}{2, -15}{3, -15}", this.LongLabel, this.Value, this.RelocatableFlag, this.MFlag);
+            return string.Format(FORMAT_STRING, this.LongLabel, this.Value, this.RelocatableFlag, this.MFlag);
+        }
+
+        public static string GetSymbolHeader()
+        {
+            return string.Format("{0}\n{1}", string.Format(FORMAT_STRING, "Label", "Value", "R Flag", "M Flag"), TOP_BAR);;
         }
 
         private static string InvalidSymbolMessage(string property, string reason, string expected, string actual)
