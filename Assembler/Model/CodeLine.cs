@@ -1,13 +1,19 @@
 ﻿using SIC.Assembler.Providers;
+using SIC.Assembler.Utilities.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace SIC.Assembler.Model
 {
     public class CodeLine
     {
+        private const string CODELINE_FORMAT_STRING = "{0, -10}{1, -15:X5}{2, -21}{3, -15}{4}";
         private const int WORD_SIZE = 3;
+        private static string TOP_BAR = new string('-', 70);
+
         public int Address { get; private set; }
         public int ByteSize { get; private set; }
         public string Expression { get; private set; }
@@ -29,62 +35,121 @@ namespace SIC.Assembler.Model
             {
                 return null;
             }
+            int newPc;
+            var line = CreateCodeLine(Regex.Split(codeline.TrimStart(), "\\s+"), symbolTable, literalTable, lineNumber, currentPC, out newPc);
 
-            try
-            {
-                int newPc;
-                var line = CreateCodeLine(Regex.Split(codeline.TrimStart(), "\\s+"), symbolTable, literalTable, lineNumber, currentPC, out newPc);
-
-                if (line == null || !ProgramCounterValid(newPc))
-                {
-                    return null;
-                }
-
-                line.ByteSize = newPc - currentPC;
-                line.Expression = codeline.TrimStart();
-                return line;
-            }
-            catch (Exception)
+            if (line == null || !ProgramCounterValid(newPc))
             {
                 return null;
             }
+
+            line.ByteSize = newPc - currentPC;
+            line.Expression = codeline.TrimStart();
+            return line;
         }
 
-        public static IList<CodeLine> PerformPass1(string[] codeLines, SymbolTable symbolTable, LiteralTable literalTable)
+        public static void PerformPass1(string[] codeLines, Action<object> printFunction, Action<object> errorPrintFunction, Action<string, string> promptFunction)
         {
+            var symbolTable = new SymbolTable();
+            var literalTable = new LiteralTable();
             var result = new List<CodeLine>();
             var lineNumber = 0;
             var programCounter = 0;
+            var ARTIFICIAL_DELAY_MILLISECONDS = 128;
+
+            printFunction = printFunction ?? Console.WriteLine;
+            errorPrintFunction = errorPrintFunction ?? printFunction;
+            promptFunction = promptFunction ?? (string, string) => { };
 
             foreach (var lineStr in codeLines)
             {
-                var line = Create(lineStr, symbolTable, literalTable, lineNumber, programCounter);
-
-                if (line != null)
+                try
                 {
-                    programCounter += line.ByteSize;
+                    Console.Write(string.Format("\rParsing line {0} of {1}", lineNumber, codeLines.Length));
+                    var line = Create(lineStr, symbolTable, literalTable, lineNumber, programCounter);
+
+                    if (line != null)
+                    {
+                        programCounter += line.ByteSize;
+                    }
+
+                    result.Add(line);
+                    lineNumber++;
+                }
+                catch (Exception ex)
+                {
+                    errorPrintFunction(string.Format("\n\rError parsing line {0} of {1}", lineNumber, codeLines.Length));
+                    errorPrintFunction(string.Format("{0}", ex.Message));
+                    printFunction("\n");
+                    return;
                 }
 
-                result.Add(line);
-                lineNumber++;
+                Thread.Sleep(ARTIFICIAL_DELAY_MILLISECONDS);
             }
 
-            return result;
+            /*
+
+            Prompt("Start building Symbol Table.", ENTER_TO_PROCEED);
+            symbolTable.BuildSymbolTable(codeLines, PrintWithTabPrefix, PrintFancyError);
+
+            Prompt("\n\nPrint Tree[In Order].", ENTER_TO_PROCEED);
+            symbolTable.Print(TraverseOrder.InOrder, PrintWithTabPrefix);
+
+            Prompt("\n\nProcess Expressions.", ENTER_TO_PROCEED);
+            var literalTable = OperandEvaluator.ParseExpressions(expressions, symbolTable, PrintWithTabPrefix);
+
+            Prompt("\n\nPrint Literal Table.", ENTER_TO_PROCEED);
+            PrintWithTabPrefix(literalTable);
+
+            Prompt("\n\n", "Press Enter to terminate...");*/
+
+            
+            printFunction("\n\n");
+            PrintCodelines(result, printFunction);
+            printFunction("\n\n");
+            symbolTable.Print(Utilities.Model.TraverseOrder.InOrder, printFunction);
+            printFunction(literalTable);
+        }
+
+        public static void PrintCodelines(IEnumerable<CodeLine> lines, Action<object> printFunction)
+        {
+            if (lines == null || !lines.Any())
+            {
+                return;
+            }
+
+            printFunction = printFunction ?? Console.WriteLine;
+
+            printFunction(string.Format(CODELINE_FORMAT_STRING,
+                "Line #",
+                "Prog Count",
+                "Label",
+                "Instruction",
+                "Operand"));
+            printFunction(TOP_BAR);
+
+            lines.ForEach(line =>
+            {
+                if (line != null)
+                {
+                    printFunction(line);
+                }
+            });
         }
 
         public override string ToString()
         {
-            return string.Format("{0, -5}{1, -10:X5}{2, -5}{3, -21}{4, -10}{5}",
+            return string.Format(CODELINE_FORMAT_STRING,
                 this.LineNumber,
                 this.ProgramCounter,
-                this.ByteSize,
                 this.Label == null ? "" : this.Label.LongLabel,
                 this.Instruction == null ? "" : this.Instruction.Mnemonic,
                 this.Operand == null ? "" : this.Operand.Expression);
         }
 
-        private static int AdvanceProgramCounter(int programCounter, Instruction instruction, Operand operand)
+        private static int AdvanceProgramCounter(int programCounter, Symbol symbol, Instruction instruction, Operand operand, SymbolTable symbolTable, LiteralTable literalTable)
         {
+            var defaultDisplacement = 3;
             var displacement = 0;
 
             if (instruction == null)
@@ -95,14 +160,28 @@ namespace SIC.Assembler.Model
             switch (instruction.DirectiveType)
             {
                 case AssemblerDirectiveType.Start:
-                    return operand.ParseAs(OperandType.JustNumber).NumericValue;
+                    return operand.Evaluate(symbolTable, literalTable, programCounter).NumericValue;
 
                 case AssemblerDirectiveType.End:
                     displacement = 0;
                     break;
 
+                case AssemblerDirectiveType.Base:
+                    displacement = 0;
+                    break;
+
+                case AssemblerDirectiveType.Equ:
+                    symbol.Value = operand.Evaluate(symbolTable, literalTable, programCounter).NumericValue;
+                    displacement = defaultDisplacement;
+                    break;
+
+                case AssemblerDirectiveType.Extdef:
+                case AssemblerDirectiveType.Extref:
+                    displacement = defaultDisplacement;
+                    break;
+
                 case AssemblerDirectiveType.Byte:
-                    displacement = operand.ParseAs(OperandType.JustNumber).ByteSize;
+                    displacement = operand.Evaluate(symbolTable, literalTable, programCounter).ByteSize;
                     break;
 
                 case AssemblerDirectiveType.Word:
@@ -110,11 +189,11 @@ namespace SIC.Assembler.Model
                     break;
 
                 case AssemblerDirectiveType.Resb:
-                    displacement = operand.ParseAs(OperandType.JustNumber).NumericValue;
+                    displacement = operand.Evaluate(symbolTable, literalTable, programCounter).NumericValue;
                     break;
 
                 case AssemblerDirectiveType.Resw:
-                    displacement = operand.ParseAs(OperandType.JustNumber).NumericValue * WORD_SIZE;
+                    displacement = operand.Evaluate(symbolTable, literalTable, programCounter).NumericValue * WORD_SIZE;
                     break;
 
                 default:
@@ -159,7 +238,7 @@ namespace SIC.Assembler.Model
                 throw new Exception(string.Format("Can't determine instruction on line #{0}.", lineNumber));
             }
 
-            newPC = AdvanceProgramCounter(currentPC, instruction, operand);
+            newPC = AdvanceProgramCounter(currentPC, symbol, instruction, operand, symbolTable, literalTable);
             return new CodeLine
             {
                 Address = currentPC,
