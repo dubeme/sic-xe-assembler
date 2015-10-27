@@ -40,7 +40,11 @@ namespace SIC.Assembler.Utilities
                         }
                         else
                         {
-                            lines.Add(line);
+                            lines.Add(line
+                                .Replace('\u201b', '\'')
+                                .Replace('\u201c', '\"')
+                                .Replace('\u201d', '\"')
+                                .Replace('\u201e', '\"'));
                         }
                     }
                 }
