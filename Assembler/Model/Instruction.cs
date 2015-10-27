@@ -22,6 +22,7 @@ namespace SIC.Assembler.Model
         };
 
         private static Instructions _ALL = null;
+        private string _mnemonic;
 
         static Instruction()
         {
@@ -65,7 +66,21 @@ namespace SIC.Assembler.Model
             }
         }
 
-        public string Mnemonic { get; set; }
+        public string Mnemonic
+        {
+            get
+            {
+                if (this.Format == InstructionFormat.Four)
+                {
+                    return "+" + this._mnemonic;
+                }
+                return this._mnemonic;
+            }
+            private set
+            {
+                this._mnemonic = value;
+            }
+        }
 
         public int OpCode { get; set; }
 
