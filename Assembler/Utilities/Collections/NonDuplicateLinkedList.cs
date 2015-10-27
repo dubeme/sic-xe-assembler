@@ -15,7 +15,7 @@ namespace SIC.Assembler.Utilities.Collections
             }
         }
 
-        private LinkedList<T> LinkedList { get; set; }
+        private LinkedList<T> LinkedList = new LinkedList<T>();
 
         public T Add(T item)
         {
