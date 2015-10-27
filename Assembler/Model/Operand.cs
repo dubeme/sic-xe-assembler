@@ -48,7 +48,7 @@ namespace SIC.Assembler.Model
             }
         }
 
-        public int NumericValue { get; set; }
+        public int NumericValue { get; private set; }
 
         public bool Relocatable { get; set; }
 
@@ -62,15 +62,24 @@ namespace SIC.Assembler.Model
             };
         }
 
-        public static Operand CreateOperand(string expression, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
+        public Operand Evaluate(SymbolTable symbolTable, LiteralTable literalTable, int programCounter = int.MinValue)
         {
-            return CreateOperand(expression, GetOperandType(expression), programCounter, symbolTable, literalTable);
+            var operand = CreateOperand(this.Expression, symbolTable, literalTable, programCounter);
+
+            this.Bytes = operand.Bytes;
+            this.Expression = operand.Expression;
+            this.NumericValue = operand.NumericValue;
+            this.Relocatable = operand.Relocatable;
+            this.Type = operand.Type;
+
+            return this;
         }
 
-        public static Operand CreateOperand(string expression, OperandType type, int programCounter, SymbolTable symbolTable, LiteralTable literalTable)
+        public static Operand CreateOperand(string expression, SymbolTable symbolTable, LiteralTable literalTable, int programCounter = int.MinValue)
         {
             // Todo: Can BYTE/WORD/RESB/RESW have Literal/Symbol as operand
             var _expression = expression.Replace("\\s+", "");
+            var type = GetOperandType(_expression);
 
             switch (type)
             {
@@ -101,11 +110,6 @@ namespace SIC.Assembler.Model
             }
 
             return str.ToString();
-        }
-
-        public Operand ParseAs(OperandType type, int programCounter = int.MinValue, SymbolTable symbolTable = null, LiteralTable literalTable = null)
-        {
-            return CreateOperand(this.Expression, programCounter, symbolTable, literalTable);
         }
 
         public override string ToString()
