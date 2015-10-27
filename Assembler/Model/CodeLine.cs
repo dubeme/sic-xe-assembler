@@ -50,16 +50,18 @@ namespace SIC.Assembler.Model
 
         public static void PerformPass1(string[] codeLines, Action<object> printFunction, Action<object> errorPrintFunction, Action<string, string> promptFunction)
         {
+            if (codeLines == null || codeLines.Length < 1)
+            {
+                printFunction("No code to parse");
+                return;
+            }
+
             var symbolTable = new SymbolTable();
             var literalTable = new LiteralTable();
             var result = new List<CodeLine>();
-            var lineNumber = 0;
+            var lineNumber = 1;
             var programCounter = 0;
-            var ARTIFICIAL_DELAY_MILLISECONDS = 128;
-
-            printFunction = printFunction ?? Console.WriteLine;
-            errorPrintFunction = errorPrintFunction ?? printFunction;
-            promptFunction = promptFunction ?? (string, string) => { };
+            var ARTIFICIAL_DELAY_MILLISECONDS = Math.Min(64, 2048/codeLines.Length);
 
             foreach (var lineStr in codeLines)
             {
@@ -80,38 +82,23 @@ namespace SIC.Assembler.Model
                 {
                     errorPrintFunction(string.Format("\n\rError parsing line {0} of {1}", lineNumber, codeLines.Length));
                     errorPrintFunction(string.Format("{0}", ex.Message));
-                    printFunction("\n");
                     return;
                 }
 
                 Thread.Sleep(ARTIFICIAL_DELAY_MILLISECONDS);
             }
 
-            /*
-
-            Prompt("Start building Symbol Table.", ENTER_TO_PROCEED);
-            symbolTable.BuildSymbolTable(codeLines, PrintWithTabPrefix, PrintFancyError);
-
-            Prompt("\n\nPrint Tree[In Order].", ENTER_TO_PROCEED);
-            symbolTable.Print(TraverseOrder.InOrder, PrintWithTabPrefix);
-
-            Prompt("\n\nProcess Expressions.", ENTER_TO_PROCEED);
-            var literalTable = OperandEvaluator.ParseExpressions(expressions, symbolTable, PrintWithTabPrefix);
-
-            Prompt("\n\nPrint Literal Table.", ENTER_TO_PROCEED);
-            PrintWithTabPrefix(literalTable);
-
-            Prompt("\n\n", "Press Enter to terminate...");*/
-
+            promptFunction("\n\nDone parsing file.", "Press enter to proceed with output...");
+            PrintCodelines(result, printFunction, promptFunction);
             
-            printFunction("\n\n");
-            PrintCodelines(result, printFunction);
-            printFunction("\n\n");
+            promptFunction("", "Press enter to proceed with dumping symbol table...");
             symbolTable.Print(Utilities.Model.TraverseOrder.InOrder, printFunction);
+            
+            promptFunction("", "Press enter to proceed with dumping literal table...");
             printFunction(literalTable);
         }
 
-        public static void PrintCodelines(IEnumerable<CodeLine> lines, Action<object> printFunction)
+        public static void PrintCodelines(IEnumerable<CodeLine> lines, Action<object> printFunction, Action<string, string> promptFunction)
         {
             if (lines == null || !lines.Any())
             {
@@ -220,7 +207,7 @@ namespace SIC.Assembler.Model
                     throw new Exception(string.Format("Can't determine instruction on line #{0}.", lineNumber));
                 }
 
-                symbol = symbolTable.AddSymbol(columns[0], currentPC, false);
+                symbol = symbolTable.AddSymbol(columns[0], currentPC, true, false);
 
                 if (columns.Length > 2)
                 {
