@@ -16,11 +16,22 @@ namespace SIC.Assembler.Model
         public const string FormatString = "{0, -24}{1, 24}{2, 10}{3, 16}";
         public const int PrintMaxLength = 74;
 
+        private const char BIG_C = 'C';
+        private const char BIG_X = 'X';
         private const int DEFAULT_ADDRESS = int.MinValue;
-        private const char LITERAL_NUMBER = 'x';
-        private const char LITERAL_STRING = 'c';
-
+        private const char SMALL_C = 'c';
+        private const char SMALL_X = 'x';
         public int Address { get; set; }
+
+        public int ByteLength
+        {
+            get
+            {
+                return this.Bytes.Length;
+            }
+        }
+
+        public byte[] Bytes { get; private set; }
 
         public string BytesAsciiString
         {
@@ -37,24 +48,6 @@ namespace SIC.Assembler.Model
                 }
 
                 return str.ToString();
-            }
-        }
-
-        public int ByteLength
-        {
-            get
-            {
-                return this.Bytes.Length;
-            }
-        }
-
-        public byte[] Bytes { get; private set; }
-
-        public int NumericValue
-        {
-            get
-            {
-                return int.Parse(this.BytesHexString, NumberStyles.HexNumber);
             }
         }
 
@@ -76,8 +69,6 @@ namespace SIC.Assembler.Model
             }
         }
 
-        public string Expression { get; set; }
-
         public string BytesHexString
         {
             get
@@ -93,6 +84,16 @@ namespace SIC.Assembler.Model
                 }
 
                 return str.ToString();
+            }
+        }
+
+        public string Expression { get; set; }
+
+        public int NumericValue
+        {
+            get
+            {
+                return int.Parse(this.BytesHexString, NumberStyles.HexNumber);
             }
         }
 
@@ -115,7 +116,7 @@ namespace SIC.Assembler.Model
             {
                 chunkSize = 1;
                 transformer = (str) => (byte)str[0];
-                valStr = valStr.TrimStart(LITERAL_STRING).Trim('\'', '"');
+                valStr = valStr.TrimStart(SMALL_C, BIG_C).Trim('\'', '"');
             }
             else
             {
@@ -128,7 +129,7 @@ namespace SIC.Assembler.Model
                 }
                 else
                 {
-                    valStr = valStr.TrimStart(LITERAL_NUMBER).Trim('\'', '"');
+                    valStr = valStr.TrimStart(SMALL_X, BIG_X).Trim('\'', '"');
                 }
 
                 if (valStr.Length % 2 == 1)
@@ -143,8 +144,8 @@ namespace SIC.Assembler.Model
 
         public static LiteralType GetLiteralType(string literalString, bool blowUpIfUnknown = false)
         {
-            const string STRING_REGEX = @"^[=]?c'([^']|(\\'))+'$";
-            const string NUMBER_REGEX = @"^[=]?x'[a-f\d]+'$";
+            const string STRING_REGEX = @"^[=]?c(('([^']|(\\'))+')|(""([^""]|(\\""))+""))$";
+            const string NUMBER_REGEX = @"^[=]?x(('[a-f\d]+')|(""[a-f\d]+""))$";
             var expr = literalString.Trim();
             var startsWithEquals = expr.StartsWith("=");
 
