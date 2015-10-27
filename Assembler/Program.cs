@@ -1,5 +1,4 @@
 ﻿using SIC.Assembler.Model;
-using SIC.Assembler.Providers;
 using SIC.Assembler.Utilities;
 using SIC.Assembler.Utilities.Extensions;
 using System;
@@ -27,13 +26,10 @@ namespace SIC.Assembler
                     var line = opcode.Split(' ');
                     Instruction.RegisterInstruction(line[0], line[1], byte.Parse(line[2]));
                 });
+                var lines = HelperMethods.GetAllLines(args[0]);
 
-                foreach (var filePath in args)
-                {
-                    PrintWithTabPrefix(string.Format("\n\nParsing - {0}\n\n", filePath));
-                    CodeLine.PerformPass1(HelperMethods.GetAllLines(filePath), PrintWithTabPrefix, PrintFancyError, Prompt);
-                    Prompt("Parse next file", "Press enter to continue...");
-                }
+                Prompt(string.Format("Loaded file - {0}", args[0]), "Press enter to proceed with parsing...");
+                CodeLine.PerformPass1(lines, PrintWithTabPrefix, PrintFancyError, Prompt);
             }
             else
             {
@@ -67,10 +63,13 @@ namespace SIC.Assembler
 
         private static void Prompt(string message, string proceed)
         {
+            var previousForground = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(message);
             Console.WriteLine(proceed);
             Console.WriteLine();
             Console.ReadLine();
+            Console.ForegroundColor = previousForground;
         }
     }
 }
