@@ -17,7 +17,7 @@ namespace SIC.Assembler
             Console.BufferWidth = 256;
             Console.BufferHeight = short.MaxValue - 1;
             Console.WindowHeight += 10;
-            Console.WindowWidth += 10;
+            Console.WindowWidth += 32;
 
             if (args.Length > 0)
             {
@@ -26,9 +26,11 @@ namespace SIC.Assembler
                     var line = opcode.Split(' ');
                     Instruction.RegisterInstruction(line[0], line[1], byte.Parse(line[2]));
                 });
-                var lines = HelperMethods.GetAllLines(args[0]);
 
-                Prompt(string.Format("Loaded file - {0}", args[0]), "Press enter to proceed with parsing...");
+                var filePath = args[0];
+                var lines = HelperMethods.GetAllLines(filePath);
+
+                Prompt(string.Format("Loaded file - {0}", filePath), "Press enter to proceed with parsing...");
                 CodeLine.PerformPass1(lines, PrintWithTabPrefix, PrintFancyError, Prompt);
             }
             else
