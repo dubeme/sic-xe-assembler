@@ -1,5 +1,4 @@
 ﻿using SIC.Assembler.Providers;
-using SIC.Assembler.Utilities.Extensions;
 using System;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,7 @@ namespace SIC.Assembler.Model
     public class Operand
     {
         public const string FormatString = "{0, -20}{1, -10}{2, -15}{3, -10}{4, -10}{5, -10}";
+        private const string CURRENT_PROGRAM_COUNTER_TOKEN = "*";
         private const string EXPRESSION_OPERATORS = "+-";
         private const string IMMEDIATE_VALUE_TOKEN = "#";
         private const string INDEXED_ADDRESSING_TOKEN = ",x";
@@ -62,19 +62,6 @@ namespace SIC.Assembler.Model
             };
         }
 
-        public Operand Evaluate(SymbolTable symbolTable, LiteralTable literalTable, int programCounter = int.MinValue)
-        {
-            var operand = CreateOperand(this.Expression, symbolTable, literalTable, programCounter);
-
-            this.Bytes = operand.Bytes;
-            this.Expression = operand.Expression;
-            this.NumericValue = operand.NumericValue;
-            this.Relocatable = operand.Relocatable;
-            this.Type = operand.Type;
-
-            return this;
-        }
-
         public static Operand CreateOperand(string expression, SymbolTable symbolTable, LiteralTable literalTable, int programCounter = int.MinValue)
         {
             // Todo: Can BYTE/WORD/RESB/RESW have Literal/Symbol as operand
@@ -83,7 +70,7 @@ namespace SIC.Assembler.Model
 
             switch (type)
             {
-                case OperandType.Simple: return ParseSimple(_expression, symbolTable);
+                case OperandType.Simple: return ParseSimple(_expression, symbolTable, programCounter);
                 case OperandType.Immediate: return ParseImmediate(_expression, symbolTable);
                 case OperandType.ArithmeticExpression: return ParseArithmeticExpression(_expression, symbolTable, literalTable);
                 case OperandType.Indexed: return ParseIndexed(_expression, symbolTable);
@@ -110,6 +97,19 @@ namespace SIC.Assembler.Model
             }
 
             return str.ToString();
+        }
+
+        public Operand Evaluate(SymbolTable symbolTable, LiteralTable literalTable, int programCounter = int.MinValue)
+        {
+            var operand = CreateOperand(this.Expression, symbolTable, literalTable, programCounter);
+
+            this.Bytes = operand.Bytes;
+            this.Expression = operand.Expression;
+            this.NumericValue = operand.NumericValue;
+            this.Relocatable = operand.Relocatable;
+            this.Type = operand.Type;
+
+            return this;
         }
 
         public override string ToString()
@@ -335,13 +335,26 @@ namespace SIC.Assembler.Model
             return literal.Type == LiteralType.Unknown ? null : operand;
         }
 
-        private static Operand ParseSimple(string expression, SymbolTable symbolTable)
+        private static Operand ParseSimple(string expression, SymbolTable symbolTable, int programCounter)
         {
-            var symbols = expression.Replace(@"\s+", "").Split(',');
-            symbols.ForEach(sym =>
+            // TODO: EXT***
+            //var symbols = expression.Replace(@"\s+", "").Split(',');
+            //symbols.ForEach(sym =>
+            //{
+            //    var value = GetSymbol(sym, symbolTable);
+            //});
+
+            if (expression.Equals(CURRENT_PROGRAM_COUNTER_TOKEN))
             {
-                var value = GetSymbol(sym, symbolTable);
-            });
+                return new Operand
+                {
+                    Expression = expression,
+                    Type = OperandType.Simple,
+                    Relocatable = true,
+                    NumericValue = programCounter
+                };
+            }
+
             var symbol = GetSymbol(expression.Replace(@"\s+", ""), symbolTable);
 
             return new Operand
