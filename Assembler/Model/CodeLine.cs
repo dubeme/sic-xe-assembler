@@ -36,7 +36,7 @@ namespace SIC.Assembler.Model
                 return null;
             }
             int newPc;
-            var line = CreateCodeLine(Regex.Split(codeline.TrimStart(), "\\s+"), symbolTable, literalTable, lineNumber, currentPC, out newPc);
+            var line = CreateCodeLine(Regex.Split(codeline.TrimStart().Replace(", ", ","), "\\s+"), symbolTable, literalTable, lineNumber, currentPC, out newPc);
 
             if (line == null || !ProgramCounterValid(newPc))
             {
@@ -61,7 +61,7 @@ namespace SIC.Assembler.Model
             var result = new List<CodeLine>();
             var lineNumber = 1;
             var programCounter = 0;
-            var ARTIFICIAL_DELAY_MILLISECONDS = Math.Min(64, 2048/codeLines.Length);
+            var ARTIFICIAL_DELAY_MILLISECONDS = Math.Min(32, 2048/codeLines.Length);
 
             foreach (var lineStr in codeLines)
             {
@@ -81,7 +81,8 @@ namespace SIC.Assembler.Model
                 catch (Exception ex)
                 {
                     errorPrintFunction(string.Format("\n\rError parsing line {0} of {1}", lineNumber, codeLines.Length));
-                    errorPrintFunction(string.Format("{0}", ex.Message));
+                    errorPrintFunction(lineStr);
+                    errorPrintFunction(ex.Message);
                     return;
                 }
 
@@ -219,10 +220,6 @@ namespace SIC.Assembler.Model
             {
                 //operand = Operand.CreateOperand(columns[1], currentPC, symbolTable, literalTable);
                 operand = Operand.CreateOperand(columns[1]);
-            }
-            else
-            {
-                throw new Exception(string.Format("Can't determine instruction on line #{0}.", lineNumber));
             }
 
             newPC = AdvanceProgramCounter(currentPC, symbol, instruction, operand, symbolTable, literalTable);
