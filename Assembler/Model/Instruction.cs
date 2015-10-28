@@ -137,6 +137,13 @@ namespace SIC.Assembler.Model
                     if (AllInstructions.ContainsKey(mnemonic))
                     {
                         var instruction = AllInstructions[mnemonic];
+
+                        if (isFormat4 && instruction.Format != InstructionFormat.Three)
+                        {
+                            // If we have a format 4 instruction, but the local instruction is format 1 OR 2
+                            return null;
+                        }
+
                         // In other to avoid someone modifying the original values for the instruction
                         // I'm returning a totally new object
                         return new Instruction
