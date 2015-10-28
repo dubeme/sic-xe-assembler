@@ -74,8 +74,12 @@ namespace SIC.Assembler.Providers
                     str.AppendLine(literal.ToString());
                 }
             }
+            else
+            {
+                str.AppendLine("Literal table empty");
+            }
 
-            return str.ToString();
+            return str.ToString().TrimEnd();
         }
 
         /// <summary>

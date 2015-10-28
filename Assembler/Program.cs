@@ -2,6 +2,7 @@
 using SIC.Assembler.Utilities;
 using SIC.Assembler.Utilities.Extensions;
 using System;
+using System.IO;
 
 namespace SIC.Assembler
 {
@@ -11,6 +12,8 @@ namespace SIC.Assembler
     internal class Program
     {
         private const string ENTER_TO_PROCEED = "Press enter to proceed ...";
+        private static TextWriter FILE_OUT = null;
+        private static TextWriter STD_OUT = Console.Out;
 
         private static void Main(string[] args)
         {
@@ -30,15 +33,43 @@ namespace SIC.Assembler
                 var filePath = args[0];
                 var lines = HelperMethods.GetAllLines(filePath);
 
-                Prompt(string.Format("Loaded file - {0}", filePath), "Press enter to proceed with parsing...");
-                CodeLine.PerformPass1(lines, PrintWithTabPrefix, PrintFancyError, Prompt);
+                var ostrm = new FileStream("out.osicxe", FileMode.OpenOrCreate, FileAccess.Write);
+                FILE_OUT = new StreamWriter(ostrm);
+
+                SwapPrint(() =>
+                {
+                    Prompt(string.Format("Loaded file - {0}", filePath), "Press enter to proceed with parsing...");
+                });
+
+                CodeLine.PerformPass1(lines, (str) =>
+                {
+                    SwapPrint(() =>
+                    {
+                        PrintWithTabPrefix(str);
+                    });
+                }, (str) =>
+                {
+                    SwapPrint(() =>
+                    {
+                        PrintFancyError(str);
+                    });
+                }, (msg, proceed) =>
+                {
+                    SwapPrint(() =>
+                    {
+                        Prompt(msg, proceed);
+                    });
+                });
             }
             else
             {
                 PrintWithTabPrefix("Source code not specified");
             }
 
-            Prompt("\n\n", "Press Enter to terminate...");
+            SwapPrint(() =>
+            {
+                Prompt("\n\n", "Press Enter to terminate...");
+            });
         }
 
         private static void Print(object obj, string prefix = "")
@@ -62,16 +93,34 @@ namespace SIC.Assembler
         {
             Print(obj, "\t");
         }
-
+        
         private static void Prompt(string message, string proceed)
         {
             var previousForground = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(message);
             Console.WriteLine(proceed);
-            Console.WriteLine();
-            Console.ReadLine();
             Console.ForegroundColor = previousForground;
+
+            if (Console.Out == STD_OUT)
+            {
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine();
+            }
+        }
+
+        private static void SwapPrint(Action printer)
+        {
+            Console.SetOut(FILE_OUT);
+            printer();
+            Console.Out.Flush();
+
+            Console.SetOut(STD_OUT);
+            printer();
+            Console.Out.Flush();
         }
     }
 }
