@@ -206,6 +206,11 @@ namespace SIC.Assembler.Utilities.Collections
             return detachedNode;
         }
 
+        public bool IsEmpty()
+        {
+            return this._Root == null || this._Root.Value == null;
+        }
+
         /// <summary>
         /// Finds the specified value to find.
         /// </summary>

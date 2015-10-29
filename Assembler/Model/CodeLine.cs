@@ -61,7 +61,7 @@ namespace SIC.Assembler.Model
             var result = new List<CodeLine>();
             var lineNumber = 1;
             var programCounter = 0;
-            var ARTIFICIAL_DELAY_MILLISECONDS = Math.Min(32, 2048/codeLines.Length);
+            var ARTIFICIAL_DELAY_MILLISECONDS = Math.Min(32, 2048 / codeLines.Length);
 
             foreach (var lineStr in codeLines)
             {
@@ -90,12 +90,15 @@ namespace SIC.Assembler.Model
             }
 
             promptFunction("\n\nDone parsing file.", "Press enter to proceed with output...");
+            printFunction("\rCode Dump\n");
             PrintCodelines(result, printFunction, promptFunction);
-            
+
             promptFunction("", "Press enter to proceed with dumping symbol table...");
+            printFunction("\n\rSymbol Table\n");
             symbolTable.Print(Utilities.Model.TraverseOrder.InOrder, printFunction);
-            
+
             promptFunction("", "Press enter to proceed with dumping literal table...");
+            printFunction("\n\rLiteral Table\n");
             printFunction(literalTable);
         }
 
@@ -105,6 +108,8 @@ namespace SIC.Assembler.Model
             {
                 return;
             }
+            int MAX_LINE = 20;
+            int lineNumber = 1;
 
             printFunction = printFunction ?? Console.WriteLine;
 
@@ -122,6 +127,20 @@ namespace SIC.Assembler.Model
                 {
                     printFunction(line);
                 }
+                else
+                {
+                    printFunction(lineNumber);
+                }
+
+                if (lineNumber % MAX_LINE == 0)
+                {
+                    Console.WriteLine(string.Format("\nLine {0} of {1}", lineNumber, lines.Count()));
+                    Console.Write("\nPress enter to continue");
+                    Console.ReadLine();
+                    Console.SetCursorPosition(0, Console.CursorTop - 1);
+                }
+
+                lineNumber++;
             });
         }
 

@@ -132,10 +132,14 @@ namespace SIC.Assembler.Providers
 
         public void Print(TraverseOrder order, Action<object> printFunction)
         {
-            if (this._SymbolTable != null)
+            if (this._SymbolTable != null && !this._SymbolTable.IsEmpty())
             {
                 printFunction(Symbol.GetSymbolHeader());
                 this._SymbolTable.Print(order, printFunction);
+            }
+            else
+            {
+                printFunction("Symbol table empty");
             }
         }
     }

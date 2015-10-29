@@ -31,15 +31,13 @@ namespace SIC.Assembler
                 });
 
                 var filePath = args[0];
+                var fileName = Path.GetFileName(filePath);
+                var outFileName = string.Format("{0}.int", Path.GetFileNameWithoutExtension(filePath));
                 var lines = HelperMethods.GetAllLines(filePath);
 
-                var ostrm = new FileStream("out.osicxe", FileMode.OpenOrCreate, FileAccess.Write);
-                FILE_OUT = new StreamWriter(ostrm);
+                FILE_OUT = new StreamWriter(new FileStream(outFileName, FileMode.Create, FileAccess.Write));
 
-                SwapPrint(() =>
-                {
-                    Prompt(string.Format("Loaded file - {0}", filePath), "Press enter to proceed with parsing...");
-                });
+                Prompt(string.Format("Loaded file - {0}", fileName), ENTER_TO_PROCEED);
 
                 CodeLine.PerformPass1(lines, (str) =>
                 {
@@ -53,23 +51,14 @@ namespace SIC.Assembler
                     {
                         PrintFancyError(str);
                     });
-                }, (msg, proceed) =>
-                {
-                    SwapPrint(() =>
-                    {
-                        Prompt(msg, proceed);
-                    });
-                });
+                },Prompt);
             }
             else
             {
                 PrintWithTabPrefix("Source code not specified");
             }
 
-            SwapPrint(() =>
-            {
-                Prompt("\n\n", "Press Enter to terminate...");
-            });
+            Prompt("\n\n", "Press Enter to terminate...");
         }
 
         private static void Print(object obj, string prefix = "")
