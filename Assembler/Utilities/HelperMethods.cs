@@ -58,7 +58,7 @@ namespace SIC.Assembler.Utilities
         /// </summary>
         /// <param name="filePath">The file path.</param>
         /// <returns></returns>
-        public static string[] GetAllNonEmptyLines(string filePath)
+        public static string[] GetAllNonEmptyLinesInFile(string filePath)
         {
             return GetAllLines(filePath, true);
         }

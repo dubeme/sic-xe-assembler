@@ -24,7 +24,7 @@ namespace SIC.Assembler
 
             if (args.Length > 0)
             {
-                HelperMethods.GetAllNonEmptyLines("opcodes").ForEach(opcode =>
+                HelperMethods.GetAllNonEmptyLinesInFile("opcodes").ForEach(opcode =>
                 {
                     var line = opcode.Split(' ');
                     Instruction.RegisterInstruction(line[0], line[1], byte.Parse(line[2]));
@@ -56,6 +56,9 @@ namespace SIC.Assembler
             else
             {
                 PrintWithTabPrefix("Source code not specified");
+                PrintWithTabPrefix("");
+                PrintWithTabPrefix("Usage: To run this assembler, you've got to specify the SIC code as a command line argument");
+                PrintWithTabPrefix("eg:  EXE_NAME SIC_CODE_FILE_NAME");
             }
 
             Prompt("\n\n", "Press Enter to terminate...");

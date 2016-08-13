@@ -12,7 +12,7 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         public void BuildSymbol()
         {
             var symbolTable = new SIC.Assembler.Providers.SymbolTable();
-            var codeLines = HelperMethods.GetAllNonEmptyLines("symbol.txt");
+            var codeLines = HelperMethods.GetAllNonEmptyLinesInFile("symbol.txt");
             symbolTable.BuildSymbolTable(codeLines);
 
             Assert.IsTrue(symbolTable["Balling"].MFlag, "M Flag should be set");
@@ -22,8 +22,8 @@ namespace Assembler.UnitTest.Providers.SymbolTable
         public void TestSymbolTree()
         {
             var symbolTable = new SIC.Assembler.Providers.SymbolTable();
-            var codeLines = HelperMethods.GetAllNonEmptyLines("symbol.txt");
-            var symbolLabels = HelperMethods.GetAllNonEmptyLines("test.txt");
+            var codeLines = HelperMethods.GetAllNonEmptyLinesInFile("symbol.txt");
+            var symbolLabels = HelperMethods.GetAllNonEmptyLinesInFile("test.txt");
             var output = "";
 
             symbolTable.BuildSymbolTable(codeLines);
